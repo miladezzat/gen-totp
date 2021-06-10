@@ -1,15 +1,15 @@
 {
   "name": "gen-totp",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "index.js",
   "description": "this is time base one time password",
   "scripts": {
-    "depcheck": "./node_modules/.bin/npm-check",
-    "commit": "./node_modules/.bin/git-cz",
+    "depcheck": "npm-check",
+    "commit": "git-cz",
     "test": "cross-env ./node_modules/mocha/bin/mocha",
-    "lint": "./node_modules/.bin/eslint ./index.js",
+    "lint": "eslint ./index.js",
     "coverage": "nyc --reporter=html --reporter=text  npm run test",
-    "git-cz": "./node_modules/.bin/git-cz"
+    "git-cz": "git-cz"
   },
   "author": "Milad E. Fahmy <miladezzat.f@gmail.com>",
   "contributors": [
@@ -34,5 +34,23 @@
     "npm-check": "^5.9.2",
     "nyc": "^15.1.0"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miladezzat/gen-totp.git"
+  },
+  "keywords": [
+    "otp",
+    "generate-otp",
+    "totp",
+    "\"mobile",
+    "verification\""
+  ],
+  "bugs": {
+    "url": "https://github.com/miladezzat/gen-totp/issues"
+  },
+  "homepage": "https://github.com/miladezzat/gen-totp#readme"
 }
