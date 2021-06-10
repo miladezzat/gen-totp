@@ -1,0 +1,38 @@
+{
+  "name": "gen-totp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "description": "this is time base one time password",
+  "scripts": {
+    "depcheck": "./node_modules/.bin/npm-check",
+    "commit": "./node_modules/.bin/git-cz",
+    "test": "cross-env ./node_modules/mocha/bin/mocha",
+    "lint": "./node_modules/.bin/eslint ./index.js",
+    "coverage": "nyc --reporter=html --reporter=text  npm run test",
+    "git-cz": "./node_modules/.bin/git-cz"
+  },
+  "author": "Milad E. Fahmy <miladezzat.f@gmail.com>",
+  "contributors": [
+    {
+      "name": "Milad E. Fahmy <miladezzat>",
+      "email": "milad@sakneen.com"
+    }
+  ],
+  "dependencies": {
+    "jssha": "^3.2.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "chai-sorted": "^0.2.0",
+    "chai-subset": "^1.6.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^7.28.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "git-cz": "^4.7.6",
+    "mocha": "^9.0.0",
+    "npm-check": "^5.9.2",
+    "nyc": "^15.1.0"
+  },
+  "license": "ISC"
+}
