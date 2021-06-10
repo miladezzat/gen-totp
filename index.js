@@ -23,7 +23,7 @@ function leftpad(str, len, pad) {
  * @returns {String}
  */
 function base32tohex(base32) {
-  const base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_';
   let bits = '';
   let hex = '';
 
@@ -68,7 +68,7 @@ function dec2hex(s) {
  * @param {Number} options.digits
  * @returns {Number} otp
  */
-function getTOTP(key, options = {}) {
+function genTOTP(key, options = {}) {
   const { period = 30, algorithm = 'SHA-1', digits = 6 } = options;
 
   const base32key = base32tohex(key);
@@ -87,4 +87,4 @@ function getTOTP(key, options = {}) {
   return otp;
 }
 
-module.exports = getTOTP;
+module.exports = genTOTP;
