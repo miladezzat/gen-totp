@@ -8,3 +8,4 @@ test
 # nyc test coverage
 .nyc_output
 .nycrc.json
+coverage
