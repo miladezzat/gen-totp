@@ -4,13 +4,16 @@
   "main": "index.js",
   "description": "this is time base one time password",
   "scripts": {
-    "depcheck": "npm-check",    
+    "depcheck": "npm-check",
     "test": "cross-env ./node_modules/mocha/bin/mocha",
     "lint": "eslint ./index.js",
     "coverage": "nyc --reporter=html --reporter=text  npm run test",
     "git-workflow": "npm run depcheck && npm run lint && npm run test && npm run coverage",
     "commit": "git-cz",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "release:major": "changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version major",
+    "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor",
+    "release:patch": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch"
   },
   "author": "Milad E. Fahmy <miladezzat.f@gmail.com>",
   "contributors": [
@@ -27,6 +30,7 @@
     "chai-sorted": "^0.2.0",
     "chai-subset": "^1.6.0",
     "cross-env": "^7.0.3",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.28.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.23.4",
@@ -54,5 +58,10 @@
   "bugs": {
     "url": "https://github.com/miladezzat/gen-totp/issues"
   },
-  "homepage": "https://github.com/miladezzat/gen-totp#readme"
+  "homepage": "https://github.com/miladezzat/gen-totp#readme",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }
