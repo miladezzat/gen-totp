@@ -1,6 +1,6 @@
 {
   "name": "gen-totp",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "main": "index.js",
   "description": "this is time base one time password",
   "scripts": {
@@ -54,8 +54,5 @@
   "bugs": {
     "url": "https://github.com/miladezzat/gen-totp/issues"
   },
-  "homepage": "https://github.com/miladezzat/gen-totp#readme",
-  "publishConfig": {
-    "registry": "https://r.privjs.com"
-  }
+  "homepage": "https://github.com/miladezzat/gen-totp#readme"
 }
