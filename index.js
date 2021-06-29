@@ -75,7 +75,7 @@ function genTOTP(key, options = {}) {
   const epoch = Math.round(Date.now() / 1000.0);
   const time = leftpad(dec2hex(Math.floor(epoch / period)), 16, '0');
 
-  const shaObj = new JsSHA(algorithm, 'HEX');
+  const shaObj = new JsSHA(algorithm, 'HEX', { encodeURI: 'UTF8' });
   shaObj.setHMACKey(base32key, 'HEX');
   shaObj.update(time);
 
