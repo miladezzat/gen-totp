@@ -1,6 +1,6 @@
 {
   "name": "gen-totp",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "main": "index.js",
   "description": "this is time base one time password",
   "scripts": {
