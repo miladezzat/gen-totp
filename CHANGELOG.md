@@ -1,3 +1,17 @@
+#### 1.0.12 (2021-07-25)
+
+##### Chores
+
+*  update deps and package ([58427f30](https://github.com/miladezzat/gen-totp/commit/58427f30c25f247d0bf8735897be5ff33fb26411))
+
+##### Continuous Integration
+
+*  update ci ([9e7e03c4](https://github.com/miladezzat/gen-totp/commit/9e7e03c4ee86c4077abbc56d4c5993572a145065))
+
+##### Documentation Changes
+
+*  update docs ([eae6a46e](https://github.com/miladezzat/gen-totp/commit/eae6a46e807ef162d19d6bd2bb8335a3cb097193))
+
 #### 1.0.9 (2021-06-22)
 
 ##### Chores
