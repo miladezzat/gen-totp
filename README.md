@@ -4,6 +4,8 @@
 ![https://img.shields.io/npm/dm/gen-totp.svg](https://img.shields.io/npm/dm/gen-totp.svg)
 
 
+> Time-based One-Time Password: Time-based One-time Password is a computer algorithm that generates a one-time password which uses the current time as a source of uniqueness. An extension of the HMAC-based One-time Password algorithm, it has been adopted as Internet Engineering Task Force standard RFC 6238. [Wikipedia](https://en.wikipedia.org/wiki/Time-based_One-Time_Password)
+
 1. Installation 
 
 ```bach
