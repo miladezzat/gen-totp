@@ -38,7 +38,7 @@
     "git-cz": "^4.7.6",
     "husky": "^7.0.1",
     "mocha": "^9.0.0",
-    "npm-check": "^4.1.4",
+    "npm-check": "^5.9.2",
     "nyc": "^15.1.0"
   },
   "license": "ISC",
