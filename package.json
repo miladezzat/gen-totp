@@ -2,14 +2,14 @@
   "name": "gen-totp",
   "version": "1.0.11",
   "main": "index.js",
-  "description": "this is time base one time password",
+  "description": "This is a time-based One-time Password is a computer algorithm that generates a one-time password which uses the current time as a source of uniqueness. An extension of the HMAC-based One-time Password algorithm, it has been adopted as Internet Engineering Task Force standard RFC 6238",
   "scripts": {
     "depcheck": "npm-check",
     "test": "cross-env ./node_modules/mocha/bin/mocha",
     "lint": "eslint ./index.js",
     "coverage": "nyc --reporter=html --reporter=text  npm run test",
     "git-workflow": "npm run depcheck && npm run lint && npm run test && npm run coverage",
-    "commit": "git-cz",
+    "commit": "./node_modules/.bin/git-cz",
     "prepare": "husky install",
     "release:major": "changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version major",
     "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor",
@@ -33,12 +33,12 @@
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.28.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "generate-changelog": "^1.8.0",
     "eslint-plugin-import": "^2.23.4",
+    "generate-changelog": "^1.8.0",
     "git-cz": "^4.7.6",
-    "husky": "^6.0.0",
+    "husky": "^7.0.1",
     "mocha": "^9.0.0",
-    "npm-check": "^5.9.2",
+    "npm-check": "^4.1.4",
     "nyc": "^15.1.0"
   },
   "license": "ISC",
@@ -59,7 +59,7 @@
   "bugs": {
     "url": "https://github.com/miladezzat/gen-totp/issues"
   },
-  "homepage": "https://github.com/miladezzat/gen-totp#readme",
+  "homepage": "https://milad-ezzat.vercel.app/posts/npm-gen-totp",
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
