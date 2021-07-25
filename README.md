@@ -1,7 +1,7 @@
 # Generate TOTP
 
-[![npm version](https://badge.fury.io/js/encrypt-rsa.svg)](https://badge.fury.io/js/gen-totp)&nbsp;
-![https://img.shields.io/npm/dm/encrypt-rsa.svg](https://img.shields.io/npm/dm/gen-totp.svg)
+[![npm version](https://badge.fury.io/js/gen-totp.svg)](https://badge.fury.io/js/gen-totp)&nbsp;
+![https://img.shields.io/npm/dm/gen-totp.svg](https://img.shields.io/npm/dm/gen-totp.svg)
 
 
 1. Installation 
