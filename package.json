@@ -1,6 +1,6 @@
 {
   "name": "gen-totp",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "main": "index.js",
   "description": "This is a time-based One-time Password is a computer algorithm that generates a one-time password which uses the current time as a source of uniqueness. An extension of the HMAC-based One-time Password algorithm, it has been adopted as Internet Engineering Task Force standard RFC 6238",
   "scripts": {
