@@ -23,7 +23,8 @@ function leftpad(str, len, pad) {
  * @returns {String}
  */
 function base32tohex(base32) {
-  const base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_';
+  const base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_~!@#$%^&*()+.';
+
   let bits = '';
   let hex = '';
 
