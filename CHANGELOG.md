@@ -1,3 +1,18 @@
+### 1.1.0 (2022-02-11)
+
+##### Chores
+
+*  🤖 update deps ([a2bd8998](https://github.com/miladezzat/gen-totp/commit/a2bd8998ad386b89bdd4ea883dd2a0d4687070e8))
+*  update deps ([3f418db6](https://github.com/miladezzat/gen-totp/commit/3f418db68f1b8d91b492a87dc66fff6af4de5af9))
+
+##### Documentation Changes
+
+*  ✏️ add docs ([eb9bdee9](https://github.com/miladezzat/gen-totp/commit/eb9bdee9e4638623bf2aa57bf60f16de72b6ef93))
+
+##### Bug Fixes
+
+*  solve bug ([87f07a53](https://github.com/miladezzat/gen-totp/commit/87f07a53fc417f16cf1b969971c11e541c318344))
+
 #### 1.0.12 (2021-07-25)
 
 ##### Chores
