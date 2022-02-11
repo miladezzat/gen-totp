@@ -1,9 +1,3 @@
-#### 1.1.1 (2022-02-11)
-
-##### Documentation Changes
-
-*  ✏️ update docs ([25d13f1f](https://github.com/miladezzat/gen-totp/commit/25d13f1f403e3980906d9381006de4fc1e25c7e3))
-
 ### 1.1.0 (2022-02-11)
 
 ##### Chores

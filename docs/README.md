@@ -39,8 +39,3 @@
     - `period` this is the time to generate new otp after it (this by seconds)
     - `algorithm` this is algorithm to pure hash numbers 
       > the complete Secure Hash Standard (SHA) family (SHA-1, SHA-224/256/384/512, SHA3-224/256/384/512, SHAKE128/256, cSHAKE128/256, and KMAC128/256) with HMAC. [jssha](https://www.npmjs.com/package/jssha)
-
-
-### Documentation
-
-[Official Documentation](https://60-min-code.github.io/gen-totp)

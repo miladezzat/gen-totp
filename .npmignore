@@ -9,3 +9,4 @@ test
 .nyc_output
 .nycrc.json
 coverage
+docs
