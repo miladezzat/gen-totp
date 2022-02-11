@@ -20,6 +20,11 @@ describe('TOTP Class', () => {
       expect(totp).to.be.a('string').with.length(6);
     });
 
+    it('success to get TOTP', () => {
+      const totp = getTOTP('milad@gmail.com', { period: 1 });
+      expect(totp).to.be.a('string').with.length(6);
+    });
+
     it('fail to get TOTP', () => {
       try {
         getTOTP('sdf&*', { digits: 6 });
