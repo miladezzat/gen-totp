@@ -1,3 +1,13 @@
+#### 1.1.2 (2022-02-17)
+
+##### Chores
+
+*  🤖 update deps ([dea5b978](https://github.com/miladezzat/gen-totp/commit/dea5b978f8548531847446d4999be63d03f9cee6))
+
+##### New Features
+
+*  🎸 add domain ([5c428bdc](https://github.com/miladezzat/gen-totp/commit/5c428bdc9804e0da226eaa4381d3f5523fd8a4c8))
+
 #### 1.1.1 (2022-02-11)
 
 ##### Documentation Changes

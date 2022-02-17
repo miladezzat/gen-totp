@@ -1,6 +1,6 @@
 {
   "name": "gen-totp",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": "index.js",
   "description": "This is a time-based One-time Password is a computer algorithm that generates a one-time password which uses the current time as a source of uniqueness. An extension of the HMAC-based One-time Password algorithm, it has been adopted as Internet Engineering Task Force standard RFC 6238",
   "scripts": {
@@ -33,7 +33,7 @@
     "cross-env": "^7.0.3",
     "cz-conventional-changelog": "^3.3.0",
     "docsify-cli": "^4.4.3",
-    "eslint": "^8.8.0",
+    "eslint": "^8.9.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.4",
     "generate-changelog": "^1.8.0",
