@@ -29,9 +29,11 @@ yarn add gen-totp
 ```
 
 ## Usage
+
 ### Basic Usage
-```ts
-const genTOTP = require('gen-totp');
+
+```typescript
+import genTOTP from 'gen-totp';
 
 const otp = genTOTP('test-key');
 // Returns a 6-digit OTP by default
@@ -39,9 +41,8 @@ console.log(otp);
 ```
 
 ### Customizing OTP Length
-
 ```ts
-const genTOTP = require('gen-totp');
+import genTOTP from 'gen-totp';
 
 const otp = genTOTP('test-key', { digits: 4 });
 // Returns a 4-digit OTP
