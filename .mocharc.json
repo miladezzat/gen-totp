@@ -1,6 +1,8 @@
 {
-"timeout": 60000,
-"exit": true,
-"recursive": true,
-"spec": "./test/**/*-test.js"
-}
+    "timeout": 60000,
+    "exit": true,
+    "recursive": true,
+    "require": "ts-node/register",
+    "spec": "test/**/*.test.ts"
+  }
+  

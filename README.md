@@ -1,46 +1,88 @@
 # Generate TOTP
 
-[![npm version](https://badge.fury.io/js/gen-totp.svg)](https://badge.fury.io/js/gen-totp)&nbsp;
-![https://img.shields.io/npm/dm/gen-totp.svg](https://img.shields.io/npm/dm/gen-totp.svg)
+[![npm version](https://badge.fury.io/js/gen-totp.svg)](https://badge.fury.io/js/gen-totp) 
+![npm downloads](https://img.shields.io/npm/dm/gen-totp.svg)
 
+Time-based One-Time Password (TOTP) is an algorithm that generates a one-time password based on the current time. TOTP is an extension of the HMAC-based One-Time Password (HOTP) algorithm and is standardized in RFC 6238. For more details, see [Wikipedia](https://en.wikipedia.org/wiki/Time-based_One-Time_Password).
 
-> Time-based One-Time Password: Time-based One-time Password is a computer algorithm that generates a one-time password which uses the current time as a source of uniqueness. An extension of the HMAC-based One-time Password algorithm, it has been adopted as Internet Engineering Task Force standard RFC 6238. [Wikipedia](https://en.wikipedia.org/wiki/Time-based_One-Time_Password)
+## Table of Contents
 
-1. Installation 
+- [Generate TOTP](#generate-totp)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Basic Usage](#basic-usage)
+    - [Customizing OTP Length](#customizing-otp-length)
+  - [Options](#options)
+  - [Documentation](#documentation)
+  - [Contributing](#contributing)
 
-```bach
-   npm i gen-totp
-   // or
-   yarn add gen-totp
+## Installation
+
+You can install `gen-totp` via npm or yarn:
+
+```bash
+npm install gen-totp
+# or
+yarn add gen-totp
 ```
 
-2. Usage
+## Usage
+### Basic Usage
+```ts
+const genTOTP = require('gen-totp');
 
-```js
-  const genTOTP = require('gen-totp');
-  
-  const otp = genTOTP('test-key');
-  // that will return otp with length 6 numbers
+const otp = genTOTP('test-key');
+// Returns a 6-digit OTP by default
+console.log(otp);
 ```
 
-```js
-  const genTOTP = require('gen-totp');
-  
-  const otp = genTOTP('test-key', { digits: 4 });
-  // that will return otp with length 4 numbers
+### Customizing OTP Length
+
+```ts
+const genTOTP = require('gen-totp');
+
+const otp = genTOTP('test-key', { digits: 4 });
+// Returns a 4-digit OTP
+console.log(otp);
 ```
 
-### Options
- > genTOTP take two parameters
+## Options
+The genTOTP function accepts two parameters:
 
- 1. `key` this is a string that contains numbers, characters, `_` and `-`
- 2. `options` this an Object
-    - `digits` this is the number of digits will return
-    - `period` this is the time to generate new otp after it (this by seconds)
-    - `algorithm` this is algorithm to pure hash numbers 
-      > the complete Secure Hash Standard (SHA) family (SHA-1, SHA-224/256/384/512, SHA3-224/256/384/512, SHAKE128/256, cSHAKE128/256, and KMAC128/256) with HMAC. [jssha](https://www.npmjs.com/package/jssha)
+1. `key`: A string containing the base32-encoded secret key. It can include numbers, uppercase letters, `_`, and `-`.
+2. `options`: An optional object to customize the OTP generation. The available `options` are detailed in the table below:
+
+| Option     | Type   | Default | Description                                                                                      |
+|------------|--------|---------|--------------------------------------------------------------------------------------------------|
+| `digits`    | number | 6       | The number of digits in the generated OTP.                                                      |
+| `period`    | number | 30      | The time period (in seconds) after which a new OTP is generated.                                |
+| `algorithm` | string | 'SHA-1' | The hashing algorithm used to generate the OTP. Supported algorithms include:                  |
+|            |        |         | - `SHA-1`                                                                                       |
+|            |        |         | - `SHA-224`                                                                                     |
+|            |        |         | - `SHA-256`                                                                                     |
+|            |        |         | - `SHA-384`                                                                                     |
+|            |        |         | - `SHA-512`                                                                                     |
+|            |        |         | - `SHA3-224`                                                                                   |
+|            |        |         | - `SHA3-256`                                                                                   |
+|            |        |         | - `SHA3-384`                                                                                   |
+|            |        |         | - `SHA3-512`                                                                                   |
+|            |        |         | For more details, refer to the [JsSHA documentation](https://www.npmjs.com/package/jssha).     |
 
 
-### Documentation
+## Documentation
+For more detailed documentation, visit the [Official Documentation](https://otp.js.org/#/).
 
-[Official Documentation](https://60-min-code.github.io/gen-totp)
+
+## Contributing
+Contributions are welcome! If you have any bug reports, suggestions, or feature requests, please open an issue on GitHub.
+
+**To contribute:**
+1. Fork the repository
+2. Create a new feature branch (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -m 'Add new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
+5. Create a new Pull Request
+
+
+Make sure to follow the [Contributor Covenant Code of Conduct](./CODE_OF_CONDUCT.md) when participating in the project.

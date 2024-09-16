@@ -10,3 +10,4 @@ test
 .nycrc.json
 coverage
 docs
+.husky
