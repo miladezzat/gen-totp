@@ -1,4 +1,4 @@
-.eslintrc.json
+.eslint.config.js
 .gitignore
 node_modules
 .github

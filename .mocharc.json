@@ -2,7 +2,7 @@
     "timeout": 60000,
     "exit": true,
     "recursive": true,
-    "require": "ts-node/register",
-    "spec": "test/**/*.test.ts"
+    "require": ["ts-node/register", "tsconfig-paths/register"],
+    "spec": "test/**/*.ts"
   }
   

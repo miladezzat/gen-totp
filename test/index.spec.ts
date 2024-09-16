@@ -1,4 +1,9 @@
-import chai from "./chai"; // Import the default export from chai.ts
+import chai from "chai";
+import chaiSubset from "chai-subset";
+import chaiSorted from "chai-sorted";
+
+chai.use(chaiSubset);
+chai.use(chaiSorted);
 import getTOTP from "../src";
 // Ensure this is the path to your module
 const { expect } = chai; // Destructure `expect` from the default export

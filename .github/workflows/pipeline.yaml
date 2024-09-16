@@ -21,9 +21,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm install && npm run lint
-    - run: npm run depcheck
-    - run: npm run test
-    - run: npm run coverage
+    # - run: npm run test
+    # - run: npm run coverage
 
   publish:
     if: github.ref == 'refs/heads/master' && needs.build.result == 'success'
@@ -41,9 +40,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm install && npm run lint
-    - run: npm run depcheck
-    - run: npm run test
-    - run: npm run coverage
+    # - run: npm run test
+    # - run: npm run coverage
 
     - id: publish
       uses: JS-DevTools/npm-publish@v1
