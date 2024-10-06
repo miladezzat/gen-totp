@@ -1,3 +1,9 @@
+#### 2.0.5 (2024-10-06)
+
+##### Bug Fixes
+
+*  package.json ([b41a0aa7](https://github.com/miladezzat/gen-totp/commit/b41a0aa72989ae8c8c4bb4efa113d92fe804e5a4))
+
 #### 2.0.4 (2024-10-06)
 
 ##### Bug Fixes
