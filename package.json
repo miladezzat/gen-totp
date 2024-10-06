@@ -83,6 +83,8 @@
         }
     },
     "files": [
-        "dist"
+        "dist",
+        "README.md",
+        "LICENSE.md"
     ]
 }

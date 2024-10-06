@@ -12,3 +12,10 @@ coverage
 docs
 .husky
 CODE_OF_CONDUCT.md
+
+# Exclude these files, but not the dist folder
+# Ignore TS build info and logs, but NOT the output of the build.
+*.tsbuildinfo
+*.log
+# Include the dist folder
+!dist
