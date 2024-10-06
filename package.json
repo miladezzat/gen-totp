@@ -1,6 +1,6 @@
 {
     "name": "gen-totp",
-    "version": "2.0.5",
+    "version": "2.0.6",
     "description": "A time-based One-time Password generator that uses current time as a source of uniqueness, following RFC 6238.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
