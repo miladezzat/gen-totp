@@ -1,3 +1,18 @@
+#### 2.0.2 (2024-10-06)
+
+##### Chores
+
+*  update deps ([ab7c893c](https://github.com/miladezzat/gen-totp/commit/ab7c893cde9a6cfebef8d7bab2b763fc5d97d35f))
+
+##### Continuous Integration
+
+*  resolve pipeline ([5bfd0e1a](https://github.com/miladezzat/gen-totp/commit/5bfd0e1af919eb461c70cf7795fd23938a946362))
+
+##### Bug Fixes
+
+*  build ([39abb386](https://github.com/miladezzat/gen-totp/commit/39abb38663d60152371eae60d10e1a7ce26316bd))
+*  pipeline ([bcd0d7e1](https://github.com/miladezzat/gen-totp/commit/bcd0d7e1d7741fdd84a760c1bbd9b17e9a28bd93))
+
 #### 2.0.1 (2024-09-16)
 
 ## 2.0.0 (2024-09-16)
