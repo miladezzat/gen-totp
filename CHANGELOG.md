@@ -1,3 +1,9 @@
+#### 2.0.4 (2024-10-06)
+
+##### Bug Fixes
+
+*  .npmignore ([0e94b6af](https://github.com/miladezzat/gen-totp/commit/0e94b6afe7cf66187a4b56f29a0ba89642ff7429))
+
 #### 2.0.3 (2024-10-06)
 
 ##### Bug Fixes
