@@ -1,3 +1,9 @@
+#### 2.0.3 (2024-10-06)
+
+##### Bug Fixes
+
+*  tsconfig ([9a2d3cdc](https://github.com/miladezzat/gen-totp/commit/9a2d3cdcc3d5cd7aa0e174b3ae62903c78f9e7b4))
+
 #### 2.0.2 (2024-10-06)
 
 ##### Chores
