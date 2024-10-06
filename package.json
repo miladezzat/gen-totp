@@ -1,85 +1,89 @@
 {
-  "name": "gen-totp",
-  "version": "2.0.1",
-  "main": "index.ts",
-  "description": "This is a time-based One-time Password is a computer algorithm that generates a one-time password which uses the current time as a source of uniqueness. An extension of the HMAC-based One-time Password algorithm, it has been adopted as Internet Engineering Task Force standard RFC 6238",
-  "scripts": {
-    "depcheck": "npm-check",
-    "test": "cross-env mocha -r ts-node/register -r tsconfig-paths/register --timeout 60000 --exit --recursive 'test/**/*.ts'",
-    "build": "tsc",
-    "lint": "eslint **/*.ts",
-    "lint:fix": "eslint **/*.ts --fix",
-    "pretest": "npm run build",
-    "docs:serve": "docsify serve ./docs",
-    "coverage": "nyc --reporter=html --reporter=text  npm run test",
-    "git-workflow": "npm run lint",
-    "commit": "git-cz",
-    "prepare": "husky install",
-    "release:major": "changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version major",
-    "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor",
-    "release:patch": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch"
-  },
-  "author": "Milad E. Fahmy <miladezzat.f@gmail.com>",
-  "contributors": [
-    {
-      "name": "Milad E. Fahmy <miladezzat>",
-      "email": "milad@sakneen.com"
-    }
-  ],
-  "dependencies": {
-    "jssha": "^3.3.1"
-  },
-  "devDependencies": {
-    "@types/chai": "^4.3.19",
-    "@types/chai-sorted": "^0.2.3",
-    "@types/chai-subset": "^1.3.5",
-    "@types/mocha": "^10.0.8",
-    "@typescript-eslint/eslint-plugin": "^8.6.0",
-    "@typescript-eslint/parser": "^8.6.0",
-    "chai": "^5.1.1",
-    "chai-sorted": "^0.2.0",
-    "chai-subset": "^1.6.0",
-    "cross-env": "^7.0.3",
-    "cz-conventional-changelog": "^3.3.0",
-    "docsify-cli": "^4.4.3",
-    "eslint": "^8.57.1",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import": "^2.30.0",
-    "eslint-plugin-prettier": "^5.2.1",
-    "generate-changelog": "^1.8.0",
-    "git-cz": "^4.8.0",
-    "husky": "^9.1.6",
-    "mocha": "^10.7.3",
-    "npm-check": "^6.0.1",
-    "nyc": "^17.0.0",
-    "prettier": "^3.3.3",
-    "ts-node": "^10.9.2",
-    "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.6.2"
-  },
-  "license": "ISC",
-  "directories": {
-    "test": "test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/miladezzat/gen-totp.git"
-  },
-  "keywords": [
-    "otp",
-    "generate-otp",
-    "totp",
-    "\"mobile",
-    "verification\""
-  ],
-  "bugs": {
-    "url": "https://github.com/miladezzat/gen-totp/issues"
-  },
-  "homepage": "https://60-min-code.github.io/gen-totp",
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
+    "name": "gen-totp",
+    "version": "2.0.1",
+    "description": "A time-based One-time Password generator that uses current time as a source of uniqueness, following RFC 6238.",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+      "depcheck": "npm-check",
+      "test": "cross-env mocha -r ts-node/register -r tsconfig-paths/register --timeout 60000 --exit --recursive 'test/**/*.ts'",
+      "build": "tsc",
+      "lint": "eslint **/*.ts",
+      "lint:fix": "eslint **/*.ts --fix",
+      "pretest": "npm run build",
+      "docs:serve": "docsify serve ./docs",
+      "coverage": "nyc --reporter=html --reporter=text  npm run test",
+      "git-workflow": "npm run lint",
+      "commit": "git-cz",
+      "prepare": "husky install",
+      "release:major": "changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version major",
+      "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor",
+      "release:patch": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch"
+    },
+    "author": "Milad E. Fahmy <miladezzat.f@gmail.com>",
+    "contributors": [
+      {
+        "name": "Milad E. Fahmy <miladezzat>",
+        "email": "milad@sakneen.com"
+      }
+    ],
+    "dependencies": {
+      "jssha": "^3.3.1"
+    },
+    "devDependencies": {
+      "@types/chai": "^4.3.19",
+      "@types/chai-sorted": "^0.2.3",
+      "@types/chai-subset": "^1.3.5",
+      "@types/mocha": "^10.0.8",
+      "@typescript-eslint/eslint-plugin": "^8.6.0",
+      "@typescript-eslint/parser": "^8.6.0",
+      "chai": "^5.1.1",
+      "chai-sorted": "^0.2.0",
+      "chai-subset": "^1.6.0",
+      "cross-env": "^7.0.3",
+      "cz-conventional-changelog": "^3.3.0",
+      "docsify-cli": "^4.4.3",
+      "eslint": "^8.57.1",
+      "eslint-config-airbnb-base": "^15.0.0",
+      "eslint-config-prettier": "^9.1.0",
+      "eslint-plugin-import": "^2.30.0",
+      "eslint-plugin-prettier": "^5.2.1",
+      "generate-changelog": "^1.8.0",
+      "git-cz": "^4.8.0",
+      "husky": "^9.1.6",
+      "mocha": "^10.7.3",
+      "npm-check": "^6.0.1",
+      "nyc": "^17.0.0",
+      "prettier": "^3.3.3",
+      "ts-node": "^10.9.2",
+      "tsconfig-paths": "^4.2.0",
+      "typescript": "^5.6.2"
+    },
+    "license": "ISC",
+    "directories": {
+      "test": "test"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/miladezzat/gen-totp.git"
+    },
+    "keywords": [
+      "otp",
+      "generate-otp",
+      "totp",
+      "mobile-verification"
+    ],
+    "bugs": {
+      "url": "https://github.com/miladezzat/gen-totp/issues"
+    },
+    "homepage": "https://60-min-code.github.io/gen-totp",
+    "config": {
+      "commitizen": {
+        "path": "./node_modules/cz-conventional-changelog"
+      }
+    },
+    "files": [
+      "dist"
+    ]
   }
-}
+  
