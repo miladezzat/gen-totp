@@ -1,3 +1,15 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [2.0.7](https://github.com/miladezzat/gen-totp/compare/v2.0.4...v2.0.7) (2025-05-21)
+
+
+### Bug Fixes
+
+* 🐛 resolve issues ([2957ff8](https://github.com/miladezzat/gen-totp/commit/2957ff8705765b51e0381fb2e3829589a7bfad76))
+* package.json ([b41a0aa](https://github.com/miladezzat/gen-totp/commit/b41a0aa72989ae8c8c4bb4efa113d92fe804e5a4))
+
 #### 2.0.6 (2024-10-06)
 
 #### 2.0.5 (2024-10-06)
@@ -119,4 +131,3 @@
 ##### Tests
 
 *  💍 set more test cases ([c8a7d795](https://github.com/miladezzat/gen-totp/commit/c8a7d795296b6bf20e4d20a9ef2a8a8d963fdcc3))
-
