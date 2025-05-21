@@ -14,8 +14,8 @@ Time-based One-Time Password (TOTP) is an algorithm that generates a one-time pa
     - [Basic Usage](#basic-usage)
     - [Customizing OTP Length](#customizing-otp-length)
   - [Options](#options)
-    - [Key Format and Allowed Characters](#key-format-and-allowed-characters)
-    - [Example of Valid Keys:](#example-of-valid-keys)
+  - [Key Format and Encoding](#key-format-and-encoding)
+  - [Documentation](#documentation)
   - [Contributing](#contributing)
 
 ## Installation
@@ -72,44 +72,39 @@ The genTOTP function accepts two parameters:
 |            |        |         | For more details, refer to the [JsSHA documentation](https://www.npmjs.com/package/jssha).     |
 
 
-### Key Format and Allowed Characters
 
-When providing a key to the `genTOTP` function, please ensure the key adheres to the following format:
+## Key Format and Encoding
+When providing a key to the genTOTP function, you can use different encodings specified by the encoding option:
 
-1. **Allowed Characters**:
-   - **Alphabetic Characters**: 
-     - Both **uppercase** (`A-Z`) and **lowercase** (`a-z`) English letters are supported.
-   - **Numeric Characters**:
-     - Digits from `0-9` are allowed.
-   - **Special Characters**:
-     - The following special characters are accepted: `-_~!@#$%^&*()+.`
-   - **Unicode Characters**:
-     - Non-English Unicode characters (such as `你`, `é`, etc.) and even emoji (😊) are supported.
+1. UTF-8 Encoding (default):
+   
+   - Any valid UTF-8 string can be used as the key
+   - Supports alphabetic characters (A-Z, a-z), numeric characters (0-9), special characters, and Unicode characters including emoji
+2. Hex Encoding :
+   
+   - The key should be a valid hexadecimal string
+   - Only characters 0-9 and a-f (case insensitive) are allowed
+3. Base32 Encoding :
+   
+   - The key should be a valid base32 string according to RFC 4648
+   - Only uppercase letters A-Z and digits 2-7 are allowed
+   - Padding with '=' is optional
+Example of valid keys:
 
-2. **Notes**:
-   - **Length**: There is no specific length restriction for the key, but it should be chosen wisely for security purposes.
-   - The key is case-sensitive, meaning `A` and `a` are treated as different characters.
-   - The key can contain a combination of any of the above characters.
-  
-### Example of Valid Keys:
-
-- `mySecureKey123!`
-- `A1B2C3D4_5678~`
-- `secretKey你!@#`
-- `emojiKey😊🔑`
-
-**Important**: Ensure your key contains only valid characters from the above categories to avoid errors or invalid key issues.
-
+- UTF-8: mySecureKey123! , secretKey你好 , emojiKey😊🔑
+- Hex: deadbeef1234 , 01a2b3c4d5e6f7
+- Base32: JBSWY3DPEHPK3PXP , GEZDGNBVGY3TQOJQ
+## Documentation
+For more detailed documentation, visit the Official Documentation .
 
 ## Contributing
 Contributions are welcome! If you have any bug reports, suggestions, or feature requests, please open an issue on GitHub.
 
-**To contribute:**
+To contribute:
+
 1. Fork the repository
-2. Create a new feature branch (`git checkout -b feature/new-feature`)
-3. Commit your changes (`git commit -m 'Add new feature'`)
-4. Push to the branch (`git push origin feature/new-feature`)
+2. Create a new feature branch ( git checkout -b feature/new-feature )
+3. Commit your changes ( git commit -m 'Add new feature' )
+4. Push to the branch ( git push origin feature/new-feature )
 5. Create a new Pull Request
-
-
 Make sure to follow the [Contributor Covenant Code of Conduct](./CODE_OF_CONDUCT.md) when participating in the project.
