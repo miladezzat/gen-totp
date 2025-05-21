@@ -1,3 +1,62 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [2.0.7](https://github.com/miladezzat/gen-totp/compare/v2.0.4...v2.0.7) (2025-05-21)
+
+
+### Bug Fixes
+
+* 🐛 resolve issues ([2957ff8](https://github.com/miladezzat/gen-totp/commit/2957ff8705765b51e0381fb2e3829589a7bfad76))
+* package.json ([b41a0aa](https://github.com/miladezzat/gen-totp/commit/b41a0aa72989ae8c8c4bb4efa113d92fe804e5a4))
+
+#### 2.0.6 (2024-10-06)
+
+#### 2.0.5 (2024-10-06)
+
+##### Bug Fixes
+
+*  package.json ([b41a0aa7](https://github.com/miladezzat/gen-totp/commit/b41a0aa72989ae8c8c4bb4efa113d92fe804e5a4))
+
+#### 2.0.4 (2024-10-06)
+
+##### Bug Fixes
+
+*  .npmignore ([0e94b6af](https://github.com/miladezzat/gen-totp/commit/0e94b6afe7cf66187a4b56f29a0ba89642ff7429))
+
+#### 2.0.3 (2024-10-06)
+
+##### Bug Fixes
+
+*  tsconfig ([9a2d3cdc](https://github.com/miladezzat/gen-totp/commit/9a2d3cdcc3d5cd7aa0e174b3ae62903c78f9e7b4))
+
+#### 2.0.2 (2024-10-06)
+
+##### Chores
+
+*  update deps ([ab7c893c](https://github.com/miladezzat/gen-totp/commit/ab7c893cde9a6cfebef8d7bab2b763fc5d97d35f))
+
+##### Continuous Integration
+
+*  resolve pipeline ([5bfd0e1a](https://github.com/miladezzat/gen-totp/commit/5bfd0e1af919eb461c70cf7795fd23938a946362))
+
+##### Bug Fixes
+
+*  build ([39abb386](https://github.com/miladezzat/gen-totp/commit/39abb38663d60152371eae60d10e1a7ce26316bd))
+*  pipeline ([bcd0d7e1](https://github.com/miladezzat/gen-totp/commit/bcd0d7e1d7741fdd84a760c1bbd9b17e9a28bd93))
+
+#### 2.0.1 (2024-09-16)
+
+## 2.0.0 (2024-09-16)
+
+##### Chores
+
+*  🤖 update deps ([dea5b978](https://github.com/miladezzat/gen-totp/commit/dea5b978f8548531847446d4999be63d03f9cee6))
+
+##### New Features
+
+*  🎸 add domain ([5c428bdc](https://github.com/miladezzat/gen-totp/commit/5c428bdc9804e0da226eaa4381d3f5523fd8a4c8))
+
 #### 1.1.2 (2022-02-17)
 
 ##### Chores
@@ -72,4 +131,3 @@
 ##### Tests
 
 *  💍 set more test cases ([c8a7d795](https://github.com/miladezzat/gen-totp/commit/c8a7d795296b6bf20e4d20a9ef2a8a8d963fdcc3))
-
