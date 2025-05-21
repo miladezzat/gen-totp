@@ -26,7 +26,7 @@ jobs:
         run: npm run build  # Assuming you have a build script in your package.json
 
       - name: Run tests
-        run: npm test
+        run: npm run test
 
       - name: Publish to npm
         env:

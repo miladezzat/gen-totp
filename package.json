@@ -6,19 +6,16 @@
     "types": "dist/index.d.ts",
     "scripts": {
         "depcheck": "npm-check",
-        "test": "cross-env mocha -r ts-node/register -r tsconfig-paths/register --timeout 60000 --exit --recursive 'test/**/*.ts'",
+        "test": "mocha -r ts-node/register tests/**/*.spec.ts",
         "build": "tsc",
         "lint": "eslint **/*.ts",
         "lint:fix": "eslint **/*.ts --fix",
-        "pretest": "npm run build",
         "docs:serve": "docsify serve ./docs",
         "coverage": "nyc --reporter=html --reporter=text  npm run test",
         "git-workflow": "npm run lint",
         "commit": "git-cz",
         "prepare": "husky install",
-        "release:major": "changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version major",
-        "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor",
-        "release:patch": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch"
+        "release": "standard-version"
     },
     "author": "Milad E. Fahmy <miladezzat.f@gmail.com>",
     "contributors": [
@@ -31,33 +28,33 @@
         "jssha": "^3.3.1"
     },
     "devDependencies": {
-        "@types/chai": "^4.3.19",
+        "@types/chai": "^4.2.21",
         "@types/chai-sorted": "^0.2.3",
         "@types/chai-subset": "^1.3.5",
-        "@types/mocha": "^10.0.8",
+        "@types/mocha": "^10.0.7",
         "@typescript-eslint/eslint-plugin": "^8.6.0",
         "@typescript-eslint/parser": "^8.6.0",
-        "chai": "^5.1.1",
+        "chai": "^4.3.4",
         "chai-sorted": "^0.2.0",
         "chai-subset": "^1.6.0",
         "cross-env": "^7.0.3",
-        "cz-conventional-changelog": "^3.3.0",
         "docsify-cli": "^4.4.3",
         "eslint": "^8.57.1",
         "eslint-config-airbnb-base": "^15.0.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-import": "^2.30.0",
         "eslint-plugin-prettier": "^5.2.1",
-        "generate-changelog": "^1.8.0",
         "git-cz": "^4.8.0",
         "husky": "^9.1.6",
-        "mocha": "^10.7.3",
+        "mocha": "^10.0.0",
         "npm-check": "^6.0.1",
         "nyc": "^17.0.0",
         "prettier": "^3.3.3",
-        "ts-node": "^10.9.2",
+        "ts-node": "^10.1.0",
         "tsconfig-paths": "^4.2.0",
-        "typescript": "^5.6.2"
+        "standard-version": "^9.5.0",
+        "typescript": "^4.3.5",
+        "@types/node": "^20.14.11"
     },
     "license": "ISC",
     "repository": {
@@ -73,10 +70,5 @@
     "bugs": {
         "url": "https://github.com/miladezzat/gen-totp/issues"
     },
-    "homepage": "https://github.com/miladezzat/gen-totp",
-    "config": {
-        "commitizen": {
-            "path": "./node_modules/cz-conventional-changelog"
-        }
-    }
+    "homepage": "https://github.com/miladezzat/gen-totp"
 }
