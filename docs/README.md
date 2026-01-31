@@ -2,6 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/gen-totp.svg)](https://badge.fury.io/js/gen-totp) 
 ![npm downloads](https://img.shields.io/npm/dm/gen-totp.svg)
+[![CI](https://github.com/miladezzat/gen-totp/actions/workflows/ci.yml/badge.svg)](https://github.com/miladezzat/gen-totp/actions/workflows/ci.yml)
 
 Time-based One-Time Password (TOTP) is an algorithm that generates a one-time password based on the current time. TOTP is an extension of the HMAC-based One-Time Password (HOTP) algorithm and is standardized in RFC 6238. For more details, see [Wikipedia](https://en.wikipedia.org/wiki/Time-based_One-Time_Password).
 
@@ -94,6 +95,34 @@ Example of valid keys:
 - UTF-8: mySecureKey123! , secretKey你好 , emojiKey😊🔑
 - Hex: deadbeef1234 , 01a2b3c4d5e6f7
 - Base32: JBSWY3DPEHPK3PXP , GEZDGNBVGY3TQOJQ
+ 
+## Features
+- `genTOTP(key, options?, timestamp?)` — generate TOTP (defaults: `period=30`, `digits=6`, `algorithm='SHA-1'`, `encoding='utf8'`). `timestamp` is unix milliseconds for deterministic output.
+- `verifyTOTP(key, token, options?, timestamp?)` — verify TOTP; returns `true|false`. Default `window = 1`.
+- `genHOTP(key, counter, options?)` — generate HOTP for a counter.
+- `verifyHOTP(key, token, counter, options?)` — verify HOTP; returns `{ newCounter }` on success or `null` on failure. Default `window = 10`.
+- `base32ToHex(input)` — RFC-4648-like base32 decoder; throws `Invalid base32 character: <char>` on invalid input.
+- `bytesToBase32(bytes)` — encode raw bytes to base32 (used by `generateSecretKey`).
+- `generateSecretKey(length = 20)` — generate a cryptographically-secure base32 secret key.
+- `generateOtpAuthUri(key, options)` — produce an `otpauth://totp/` URI for QR codes; requires a valid base32 key and throws `Invalid base32 key for otpauth URI` for invalid input.
+- Supported algorithms: `SHA-1`, `SHA-224`, `SHA-256`, `SHA-384`, `SHA-512`, `SHA3-224`, `SHA3-256`, `SHA3-384`, `SHA3-512`.
+- Encodings supported: `utf8`, `hex`, `base32`.
+- Exports: default `genTOTP` plus named helpers (`base32ToHex`, `bytesToBase32`, `genHOTP`, `verifyHOTP`, `verifyTOTP`, `generateSecretKey`, `generateOtpAuthUri`).
+## Deterministic testing
+You can pass an optional third argument `timestamp` (unix milliseconds) to `genTOTP` for deterministic outputs used in tests or debugging. Example:
+
+```ts
+genTOTP('my-secret', { digits: 6, period: 30 }, Date.parse('2021-01-01T00:00:00Z'))
+```
+
+## Input validation
+- `encoding: 'hex'` will validate that the key contains only hex characters and throw `Invalid hex character in key` when invalid.
+- `period` must be a positive number; otherwise `Invalid period; must be a positive number` is thrown.
+- `digits` must be an integer between 1 and 10; otherwise `Invalid digits; must be an integer between 1 and 10` is thrown.
+## Developer notes
+- Tests run against source TypeScript (not `dist/`): `npm test` uses `mocha -r ts-node/register tests/**/*.spec.ts`.
+- Build artifacts are produced to `dist/` via `npm run build` (`tsc`).
+- Agent-focused guidance and repo-specific guidelines live in `.github/copilot-instructions.md` — useful for automated contributors and CI edits.
 ## Documentation
 For more detailed documentation, visit the Official Documentation .
 
