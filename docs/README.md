@@ -95,6 +95,19 @@ Example of valid keys:
 - UTF-8: mySecureKey123! , secretKey你好 , emojiKey😊🔑
 - Hex: deadbeef1234 , 01a2b3c4d5e6f7
 - Base32: JBSWY3DPEHPK3PXP , GEZDGNBVGY3TQOJQ
+ 
+## Features
+- `genTOTP(key, options?, timestamp?)` — generate TOTP (defaults: `period=30`, `digits=6`, `algorithm='SHA-1'`, `encoding='utf8'`). `timestamp` is unix milliseconds for deterministic output.
+- `verifyTOTP(key, token, options?, timestamp?)` — verify TOTP; returns `true|false`. Default `window = 1`.
+- `genHOTP(key, counter, options?)` — generate HOTP for a counter.
+- `verifyHOTP(key, token, counter, options?)` — verify HOTP; returns `{ newCounter }` on success or `null` on failure. Default `window = 10`.
+- `base32ToHex(input)` — RFC-4648-like base32 decoder; throws `Invalid base32 character: <char>` on invalid input.
+- `bytesToBase32(bytes)` — encode raw bytes to base32 (used by `generateSecretKey`).
+- `generateSecretKey(length = 20)` — generate a cryptographically-secure base32 secret key.
+- `generateOtpAuthUri(key, options)` — produce an `otpauth://totp/` URI for QR codes; requires a valid base32 key and throws `Invalid base32 key for otpauth URI` for invalid input.
+- Supported algorithms: `SHA-1`, `SHA-224`, `SHA-256`, `SHA-384`, `SHA-512`, `SHA3-224`, `SHA3-256`, `SHA3-384`, `SHA3-512`.
+- Encodings supported: `utf8`, `hex`, `base32`.
+- Exports: default `genTOTP` plus named helpers (`base32ToHex`, `bytesToBase32`, `genHOTP`, `verifyHOTP`, `verifyTOTP`, `generateSecretKey`, `generateOtpAuthUri`).
 ## Deterministic testing
 You can pass an optional third argument `timestamp` (unix milliseconds) to `genTOTP` for deterministic outputs used in tests or debugging. Example:
 

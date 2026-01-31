@@ -49,11 +49,11 @@ const otp = genTOTP('test-key', { digits: 4 });
 console.log(otp);
 ```
 
-## Options
-The genTOTP function accepts two parameters:
+## Options & API
+The `genTOTP` function accepts a `key` and an optional `options` object. By default the key is treated as UTF-8 text; use the `encoding` option to specify `hex` or `base32` when needed.
 
-1. `key`: A string containing the base32-encoded secret key. It can include numbers, uppercase letters, `_`, and `-`.
-2. `options`: An optional object to customize the OTP generation. The available `options` are detailed in the table below:
+1. `key`: The secret key (default treated as UTF-8). To change how the key is interpreted set `options.encoding` to one of: `utf8` (default), `hex`, `base32`.
+2. `options`: An optional object to customize OTP generation. The available `options` are detailed in the table below.
 
 | Option     | Type   | Default | Description                                                                                      |
 |------------|--------|---------|--------------------------------------------------------------------------------------------------|
@@ -73,39 +73,50 @@ The genTOTP function accepts two parameters:
 
 
 
-## Key Format and Encoding
-When providing a key to the genTOTP function, you can use different encodings specified by the encoding option:
+## Key format and encodings
+`genTOTP` accepts keys in three encodings (default `utf8`):
 
-1. UTF-8 Encoding (default):
-   
-   - Any valid UTF-8 string can be used as the key
-   - Supports alphabetic characters (A-Z, a-z), numeric characters (0-9), special characters, and Unicode characters including emoji
-2. Hex Encoding :
-   
-   - The key should be a valid hexadecimal string
-   - Only characters 0-9 and a-f (case insensitive) are allowed
-3. Base32 Encoding :
-   
-   - The key should be a valid base32 string according to RFC 4648
-   - Only uppercase letters A-Z and digits 2-7 are allowed
-   - Padding with '=' is optional
-Example of valid keys:
+- `utf8` (default): any UTF-8 string (letters, numbers, symbols, emoji).
+- `hex`: accepts 0-9 and a-f (case-insensitive). Invalid input throws `Invalid hex character in key`.
+- `base32`: RFC-4648 base32 (A–Z and 2–7). Padding `=` is stripped; invalid characters throw `Invalid base32 character: <char>`.
 
-- UTF-8: mySecureKey123! , secretKey你好 , emojiKey😊🔑
-- Hex: deadbeef1234 , 01a2b3c4d5e6f7
-- Base32: JBSWY3DPEHPK3PXP , GEZDGNBVGY3TQOJQ
+Examples:
+
+- UTF-8: `mySecureKey123!`, `secretKey你好`, `emojiKey😊🔑`
+- Hex: `deadbeef1234`, `01a2b3c4d5e6f7`
+- Base32: `JBSWY3DPEHPK3PXP`, `GEZDGNBVGY3TQOJQ`
  
-## Deterministic testing
-For deterministic tests or debugging you can pass an optional third argument `timestamp` (unix milliseconds) to `genTOTP`:
+## Deterministic testing & timestamp units
+`genTOTP` accepts an optional third argument `timestamp` in unix milliseconds for deterministic outputs (used heavily in tests). Example:
 
 ```ts
 genTOTP('my-secret', { digits: 6, period: 30 }, Date.parse('2021-01-01T00:00:00Z'))
 ```
 
-## Input validation
+## Input validation & verification defaults
 - `encoding: 'hex'` will validate that the key contains only hex characters and throw `Invalid hex character in key` when invalid.
 - `period` must be a positive number; otherwise `Invalid period; must be a positive number` is thrown.
 - `digits` must be an integer between 1 and 10; otherwise `Invalid digits; must be an integer between 1 and 10` is thrown.
+
+Verification defaults:
+
+- `verifyTOTP` default `window = 1` (checks previous/current/next period).
+- `verifyHOTP` default `window = 10` and returns `{ newCounter }` on success or `null` on failure.
+
+See `src/index.ts` for exact behavior and error messages.
+
+## Features
+- `genTOTP(key, options?, timestamp?)` — generate TOTP (default: `period=30`, `digits=6`, `algorithm='SHA-1'`, `encoding='utf8'`). `timestamp` is unix milliseconds for deterministic output.
+- `verifyTOTP(key, token, options?, timestamp?)` — verify a TOTP; returns `true|false`. Default verification `window = 1`.
+- `genHOTP(key, counter, options?)` — generate HOTP given a counter.
+- `verifyHOTP(key, token, counter, options?)` — verify HOTP; returns `{ newCounter }` on success or `null` on failure. Default `window = 10`.
+- `base32ToHex(input)` — RFC-4648-like base32 decoder used internally; throws `Invalid base32 character: <char>` on invalid input.
+- `bytesToBase32(bytes)` — encode raw bytes to base32 (used by `generateSecretKey`).
+- `generateSecretKey(length = 20)` — generate a cryptographically-secure base32 secret (default 20 bytes → 32 base32 chars).
+- `generateOtpAuthUri(key, { accountName, issuer, ... })` — build an `otpauth://totp/...` URI for QR codes; requires a valid base32 key and throws `Invalid base32 key for otpauth URI` for invalid input.
+- Supported algorithms: `SHA-1`, `SHA-224`, `SHA-256`, `SHA-384`, `SHA-512`, `SHA3-224`, `SHA3-256`, `SHA3-384`, `SHA3-512` (see `FixedLengthVariantType`).
+- Key encodings: `utf8` (default), `hex` (validated; throws `Invalid hex character in key`), `base32` (uppercased, `=` padding stripped).
+- Exports: default export is `genTOTP`; named exports include `base32ToHex`, `bytesToBase32`, `genHOTP`, `verifyHOTP`, `verifyTOTP`, `generateSecretKey`, `generateOtpAuthUri`.
 ## Documentation
 For more detailed documentation, visit the Official Documentation .
 
