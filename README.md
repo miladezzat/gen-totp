@@ -94,6 +94,18 @@ Example of valid keys:
 - UTF-8: mySecureKey123! , secretKey你好 , emojiKey😊🔑
 - Hex: deadbeef1234 , 01a2b3c4d5e6f7
 - Base32: JBSWY3DPEHPK3PXP , GEZDGNBVGY3TQOJQ
+ 
+## Deterministic testing
+For deterministic tests or debugging you can pass an optional third argument `timestamp` (unix milliseconds) to `genTOTP`:
+
+```ts
+genTOTP('my-secret', { digits: 6, period: 30 }, Date.parse('2021-01-01T00:00:00Z'))
+```
+
+## Input validation
+- `encoding: 'hex'` will validate that the key contains only hex characters and throw `Invalid hex character in key` when invalid.
+- `period` must be a positive number; otherwise `Invalid period; must be a positive number` is thrown.
+- `digits` must be an integer between 1 and 10; otherwise `Invalid digits; must be an integer between 1 and 10` is thrown.
 ## Documentation
 For more detailed documentation, visit the Official Documentation .
 

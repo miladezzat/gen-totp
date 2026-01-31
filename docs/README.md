@@ -2,6 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/gen-totp.svg)](https://badge.fury.io/js/gen-totp) 
 ![npm downloads](https://img.shields.io/npm/dm/gen-totp.svg)
+[![CI](https://github.com/miladezzat/gen-totp/actions/workflows/ci.yml/badge.svg)](https://github.com/miladezzat/gen-totp/actions/workflows/ci.yml)
 
 Time-based One-Time Password (TOTP) is an algorithm that generates a one-time password based on the current time. TOTP is an extension of the HMAC-based One-Time Password (HOTP) algorithm and is standardized in RFC 6238. For more details, see [Wikipedia](https://en.wikipedia.org/wiki/Time-based_One-Time_Password).
 
@@ -94,6 +95,21 @@ Example of valid keys:
 - UTF-8: mySecureKey123! , secretKey你好 , emojiKey😊🔑
 - Hex: deadbeef1234 , 01a2b3c4d5e6f7
 - Base32: JBSWY3DPEHPK3PXP , GEZDGNBVGY3TQOJQ
+## Deterministic testing
+You can pass an optional third argument `timestamp` (unix milliseconds) to `genTOTP` for deterministic outputs used in tests or debugging. Example:
+
+```ts
+genTOTP('my-secret', { digits: 6, period: 30 }, Date.parse('2021-01-01T00:00:00Z'))
+```
+
+## Input validation
+- `encoding: 'hex'` will validate that the key contains only hex characters and throw `Invalid hex character in key` when invalid.
+- `period` must be a positive number; otherwise `Invalid period; must be a positive number` is thrown.
+- `digits` must be an integer between 1 and 10; otherwise `Invalid digits; must be an integer between 1 and 10` is thrown.
+## Developer notes
+- Tests run against source TypeScript (not `dist/`): `npm test` uses `mocha -r ts-node/register tests/**/*.spec.ts`.
+- Build artifacts are produced to `dist/` via `npm run build` (`tsc`).
+- Agent-focused guidance and repo-specific guidelines live in `.github/copilot-instructions.md` — useful for automated contributors and CI edits.
 ## Documentation
 For more detailed documentation, visit the Official Documentation .
 
