@@ -8,9 +8,18 @@ function stableVersion(value) {
 
 async function checkRelease({ name, version }, fetchRegistry = fetch) {
   const local = stableVersion(version);
-  const response = await fetchRegistry(`https://registry.npmjs.org/${encodeURIComponent(name)}/latest`, {
-    signal: AbortSignal.timeout(15000),
+  const registry = `https://registry.npmjs.org/${encodeURIComponent(name)}`;
+  const options = () => ({
+    signal: AbortSignal.timeout(15000), cache: 'no-store', headers: { 'Cache-Control': 'no-cache' },
   });
+  const exact = await fetchRegistry(`${registry}/${encodeURIComponent(version)}`, options());
+  if (exact.ok) {
+    const published = await exact.json();
+    if (published.name !== name || published.version !== version) throw new Error('Registry returned invalid exact-version metadata');
+    return false;
+  }
+  if (exact.status !== 404) throw new Error(`Exact-version lookup failed: HTTP ${exact.status}`);
+  const response = await fetchRegistry(`${registry}/latest`, options());
   if (!response.ok) throw new Error(`Registry lookup failed: HTTP ${response.status}`);
   const published = await response.json();
   if (published.name !== name) throw new Error('Registry returned a different package');
@@ -19,7 +28,7 @@ async function checkRelease({ name, version }, fetchRegistry = fetch) {
     if (local[index] < latest[index]) throw new Error('Local version is older than npm latest');
     if (local[index] > latest[index]) return true;
   }
-  return false;
+  throw new Error('Registry latest points to an unavailable exact version; retry after replication');
 }
 
 if (require.main === module) {
