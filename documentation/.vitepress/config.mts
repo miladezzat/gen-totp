@@ -10,6 +10,8 @@ export default defineConfig({
   lang: 'en-US',
   base: '/',
   cleanUrls: false,
+  // Stable local-search document IDs keep committed assets reproducible.
+  buildConcurrency: 1,
   outDir: fileURLToPath(new URL('../../docs', import.meta.url)),
   head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }]],
   sitemap: { hostname: 'https://otp.js.org' },

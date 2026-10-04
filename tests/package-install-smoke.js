@@ -7,13 +7,13 @@ const root = path.resolve(__dirname, '..');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'gen-totp-consumer-'));
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 try {
-  const packed = JSON.parse(execFileSync(npm, ['pack', '--json', '--ignore-scripts', '--pack-destination', temporary], { cwd: root, encoding: 'utf8' }))[0];
+  const packed = JSON.parse(execFileSync(npm, ['pack', '--json', '--ignore-scripts', '--pack-destination', temporary], { cwd: root, encoding: 'utf8', env: { ...process.env, HUSKY: '0' } }))[0];
   for (const file of ['dist/index.js', 'dist/index.mjs', 'dist/index.d.ts', 'dist/index.d.mts', 'LICENSE.md']) {
     assert.ok(packed.files.some((entry) => entry.path === file), 'Missing package file ' + file);
   }
   assert.ok(!packed.files.some((entry) => /^(docs|documentation|tests|src)\//.test(entry.path)), 'Development files leaked into package');
   fs.writeFileSync(path.join(temporary, 'package.json'), '{"name":"gen-totp-consumer","private":true}\n');
-  execFileSync(npm, ['install', '--offline', '--ignore-scripts', '--no-audit', '--no-fund', path.join(temporary, packed.filename)], { cwd: temporary, stdio: 'pipe' });
+  execFileSync(npm, ['install', '--prefer-offline', '--ignore-scripts', '--no-audit', '--no-fund', path.join(temporary, packed.filename)], { cwd: temporary, stdio: 'pipe' });
   const check = `const assert = require('node:assert/strict'); const api = require('gen-totp'); assert.equal(api.default, api.genTOTP); assert.equal(api.genHOTP('12345678901234567890', 0), '755224');`;
   execFileSync(process.execPath, ['-e', check], { cwd: temporary, stdio: 'inherit' });
   const esm = `import genTOTP, { genHOTP, verifyTOTP } from 'gen-totp'; import assert from 'node:assert/strict'; assert.equal(typeof genTOTP, 'function'); assert.equal(genHOTP('12345678901234567890', 0), '755224'); assert.equal(verifyTOTP('12345678901234567890', genTOTP('12345678901234567890', {digits:8}, 59000), {digits:8,window:0}, 59000), true);`;
