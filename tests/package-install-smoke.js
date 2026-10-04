@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
+const { verifyInstalledPackage } = require('../scripts/verify-published-package');
 const root = path.resolve(__dirname, '..');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'gen-totp-consumer-'));
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
@@ -16,6 +17,7 @@ try {
   assert.ok(!packed.files.some((entry) => /^(docs|documentation|tests|src)\//.test(entry.path)), 'Development files leaked into package');
   fs.writeFileSync(path.join(temporary, 'package.json'), '{"name":"gen-totp-consumer","private":true}\n');
   execFileSync(npm, ['install', '--prefer-offline', '--ignore-scripts', '--no-audit', '--no-fund', path.join(temporary, packed.filename)], { cwd: temporary, stdio: 'pipe' });
+  verifyInstalledPackage(temporary, require('../package.json'));
   const check = `const assert = require('node:assert/strict'); const api = require('gen-totp'); assert.equal(api.default, api.genTOTP); assert.equal(api.genHOTP('12345678901234567890', 0), '755224'); assert.deepEqual(api.verifyTOTPWithResult('12345678901234567890', '94287082', {digits:8,window:0}, 59000), {counter:1,delta:0});`;
   execFileSync(process.execPath, ['-e', check], { cwd: temporary, stdio: 'inherit' });
   const esm = `import genTOTP, { genHOTP, verifyTOTP, verifyTOTPWithResult } from 'gen-totp'; import assert from 'node:assert/strict'; assert.equal(typeof genTOTP, 'function'); assert.equal(genHOTP('12345678901234567890', 0), '755224'); assert.equal(verifyTOTP('12345678901234567890', genTOTP('12345678901234567890', {digits:8}, 59000), {digits:8,window:0}, 59000), true); assert.deepEqual(verifyTOTPWithResult('12345678901234567890', '94287082', {digits:8,window:0}, 59000), {counter:1,delta:0});`;
