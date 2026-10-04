@@ -34,6 +34,8 @@ The workflow uses Node.js 24, npm 11.13.0, and `id-token: write`. It publishes w
 
 After a successful publish, the workflow polls the exact npm version, installs it in an isolated consumer with lifecycle scripts disabled, and checks that its tarball integrity matches registry metadata. It verifies the declared runtime and type files, then runs CommonJS and native ESM consumers against RFC vectors and the new counter API. The existing-release path performs the same artifact checks. A registry timeout or broken artifact fails verification without publishing again. Inspect npm before retrying a release.
 
+Exact-version metadata can appear before npm can install the version. The verifier revalidates cached registry information and retries temporary installation availability errors within the same deadline. Broken artifacts, integrity mismatches, and authentication failures still fail immediately.
+
 ## Validate locally
 
 ```sh
