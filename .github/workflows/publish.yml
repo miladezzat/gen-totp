@@ -50,6 +50,7 @@ jobs:
       - run: npm run build
       - run: npm test && npm run test:release
       - run: npm run smoke && npm run smoke:install
+      - run: npm run test:prepare
       - run: npm run docs && npm run smoke:docs
       - run: git diff --exit-code -- docs
       - run: npx playwright install --with-deps chromium

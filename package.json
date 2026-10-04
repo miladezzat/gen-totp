@@ -7,6 +7,7 @@
   "scripts": {
     "test": "npm run build:test && mocha \"build/test/tests/**/*.spec.js\"",
     "test:release": "node --test tests/release.test.js",
+    "test:prepare": "node --test tests/package-prepare.test.js",
     "build": "node scripts/build.js",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
@@ -20,7 +21,7 @@
     "smoke:docs:browser": "node tests/docs-browser-smoke.js",
     "coverage": "nyc --reporter=html --reporter=text npm test",
     "git-workflow": "npm run lint",
-    "prepare": "husky",
+    "prepare": "node scripts/prepare.js",
     "prepublishOnly": "npm run build",
     "release": "standard-version",
     "build:test": "tsc -p tsconfig.test.json"
