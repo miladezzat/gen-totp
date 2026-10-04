@@ -1,5 +1,7 @@
 # Contributing
 
+`npm ci` and ordinary `npm pack` prepare the CommonJS, ESM, and declaration files automatically. Git dependency preparation also builds the package, while Husky hooks are installed only for local development in this checkout. Run `npm run test:prepare` to verify clean-source packaging.
+
 ## Install and check
 
 ```sh

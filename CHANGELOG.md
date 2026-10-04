@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Fixed
 
+- Build runtime files automatically when installing or packing a source checkout.
 - Select the correct TOTP counter at exact fractional-period boundaries.
 - Preserve leading zeroes and the configured digit count in TOTP/HOTP output.
 - Decode Base32 into complete bytes and validate padding, length, and unused bits.
