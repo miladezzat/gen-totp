@@ -89,12 +89,24 @@ function validateWindow(window: number): void {
     throw new Error("Invalid window; must be an integer between 0 and 1000");
   }
 }
+function decimalParts(value: number): [bigint, number] {
+  const [coefficient, exponent = "0"] = value.toString().split("e");
+  const decimalPlaces = coefficient.includes(".") ? coefficient.length - coefficient.indexOf(".") - 1 : 0;
+  return [BigInt(coefficient.replace(".", "")), Number(exponent) - decimalPlaces];
+}
 function timeCounter(timestamp: number, period: number): number {
   validatePeriod(period);
   if (!Number.isFinite(timestamp) || timestamp < 0 || timestamp > Number.MAX_SAFE_INTEGER) {
     throw new Error("Invalid timestamp; must be non-negative Unix milliseconds within the safe integer range");
   }
-  const counter = Math.floor(timestamp / 1000 / period);
+  // Divide the decimal inputs in milliseconds exactly. Binary floating-point
+  // division can otherwise select the previous counter at a period boundary.
+  let [numerator, timestampExponent] = decimalParts(timestamp);
+  let [denominator, periodExponent] = decimalParts(period);
+  const exponent = timestampExponent - periodExponent - 3;
+  if (exponent >= 0) numerator *= 10n ** BigInt(exponent);
+  else denominator *= 10n ** BigInt(-exponent);
+  const counter = Number(numerator / denominator);
   validateCounter(counter);
   return counter;
 }

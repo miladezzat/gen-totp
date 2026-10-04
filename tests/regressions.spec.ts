@@ -44,6 +44,24 @@ describe("Fixed-width OTP and counter regressions", () => {
   it("handles subsecond periods without rounding down the timestamp first", () => {
     expect(genTOTP(secret, { period: 0.5 }, 750)).to.equal(genHOTP(secret, 1));
   });
+  for (const [period, milliseconds] of [[0.07, 70], [0.1, 100], [0.29, 290], [30.1, 30100], [31.9, 31900]]) {
+    it("uses exact decimal boundaries for period " + period, () => {
+      for (const counter of [1, 3, 13, 100]) {
+        const timestamp = milliseconds * counter;
+        const expected = genHOTP(secret, counter);
+        expect(genTOTP(secret, { period }, timestamp - 1)).to.equal(genHOTP(secret, counter - 1));
+        expect(genTOTP(secret, { period }, timestamp)).to.equal(expected);
+        expect(genTOTP(secret, { period }, timestamp + 1)).to.equal(expected);
+        expect(verifyTOTP(secret, expected, { period, window: 0 }, timestamp)).to.equal(true);
+      }
+    });
+  }
+  it("handles scientific notation and sub-millisecond decimal periods", () => {
+    expect(genTOTP(secret, { period: 1e-6 }, 0.003)).to.equal(genHOTP(secret, 3));
+    expect(genTOTP(secret, { period: Number.MAX_VALUE }, Number.MAX_SAFE_INTEGER)).to.equal(genHOTP(secret, 0));
+    expect(genTOTP(secret, { period: Number.MIN_VALUE }, 0)).to.equal(genHOTP(secret, 0));
+    expect(() => genTOTP(secret, { period: Number.MIN_VALUE }, 1)).to.throw("Invalid counter");
+  });
   it("supports counters above 32 bits and at the safe integer limit", () => {
     for (const counter of [2 ** 32, Number.MAX_SAFE_INTEGER]) {
       expect(genHOTP(secret, counter)).to.equal(referenceHOTP(secret, counter, 6));
