@@ -129,8 +129,11 @@ export function genHOTP(key: string, counter: number, options: GenHOTPOptions = 
   validateOtpOptions(options);
   validateCounter(counter);
   const { algorithm = "SHA-1", digits = 6, encoding = "utf8" } = options;
+  return hotpFromHex(keyToHex(key, encoding), counter, algorithm, digits);
+}
+function hotpFromHex(hex: string, counter: number, algorithm: FixedLengthVariantType, digits: number): string {
   const sha = new JsSHA(algorithm, "HEX");
-  sha.setHMACKey(keyToHex(key, encoding), "HEX");
+  sha.setHMACKey(hex, "HEX");
   sha.update(counter.toString(16).padStart(16, "0"));
   const hmac = sha.getHMAC("HEX");
   const offset = hexToDec(hmac[hmac.length - 1]);
@@ -152,17 +155,17 @@ function tokensEqual(expected: string, token: string): boolean {
 export function verifyTOTP(
   key: string, token: string, options: VerifyTOTPOptions = {}, timestamp = Date.now(),
 ): boolean {
-  const { window = 1, period = 30, digits = 6 } = options;
+  const { window = 1, period = 30, digits = 6, algorithm = "SHA-1", encoding = "utf8" } = options;
   validateWindow(window);
   validateOtpOptions(options);
   const counter = timeCounter(timestamp, period);
   validateCounter(counter + window);
-  keyToHex(key, options.encoding ?? "utf8");
+  const hex = keyToHex(key, encoding);
   if (!validToken(token, digits)) return false;
   let matched = false;
   for (let offset = -window; offset <= window; offset += 1) {
     if (counter + offset < 0) continue;
-    const equal = tokensEqual(genHOTP(key, counter + offset, options), token);
+    const equal = tokensEqual(hotpFromHex(hex, counter + offset, algorithm, digits), token);
     matched = equal || matched;
   }
   return matched;
@@ -171,16 +174,16 @@ export function verifyTOTP(
 export function verifyHOTP(
   key: string, token: string, counter: number, options: VerifyHOTPOptions = {},
 ): { newCounter: number } | null {
-  const { window = 10, digits = 6 } = options;
+  const { window = 10, digits = 6, algorithm = "SHA-1", encoding = "utf8" } = options;
   validateWindow(window);
   validateOtpOptions(options);
   validateCounter(counter);
   validateCounter(counter + window + 1);
-  keyToHex(key, options.encoding ?? "utf8");
+  const hex = keyToHex(key, encoding);
   if (!validToken(token, digits)) return null;
   let result: { newCounter: number } | null = null;
   for (let offset = 0; offset <= window; offset += 1) {
-    const equal = tokensEqual(genHOTP(key, counter + offset, options), token);
+    const equal = tokensEqual(hotpFromHex(hex, counter + offset, algorithm, digits), token);
     if (equal && result === null) result = { newCounter: counter + offset + 1 };
   }
   return result;
