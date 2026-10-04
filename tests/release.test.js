@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { checkRelease } = require('../scripts/check-release');
 const { verifyRelease } = require('../scripts/verify-release');
-const { verifyInstalledPackage } = require('../scripts/verify-published-package');
+const { verifyInstalledPackage, verifyPublishedPackage, NpmAvailabilityError } = require('../scripts/verify-published-package');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
@@ -94,6 +94,57 @@ test('verification fails immediately when a published artifact is unusable', asy
     verifyPackage: async () => { throw new Error('Missing package entry: ./dist/index.js'); }, log: () => {},
   }), /Missing package entry/);
   assert.equal(calls, 1);
+});
+
+test('verification waits when metadata is ready before npm can install the version', async () => {
+  let now = 0;
+  let attempts = 0;
+  const budgets = [];
+  const result = await verifyRelease(pkg, {
+    now: () => now, wait: async (ms) => { now += ms; }, timeoutMs: 30000,
+    fetchRegistry: async () => response(metadata), log: () => {},
+    verifyPackage: async (_released, { timeoutMs }) => {
+      budgets.push(timeoutMs);
+      attempts += 1;
+      if (attempts < 3) throw new NpmAvailabilityError('npm installation unavailable (ETARGET)');
+    },
+  });
+  assert.deepEqual(result, metadata);
+  assert.deepEqual(budgets, [30000, 25000, 15000]);
+  assert.equal(attempts, 3);
+});
+test('installation replication retries stop at the original verification deadline', async () => {
+  let now = 0;
+  let attempts = 0;
+  await assert.rejects(verifyRelease(pkg, {
+    now: () => now, wait: async (ms) => { now += ms; }, timeoutMs: 10000,
+    fetchRegistry: async () => response(metadata), log: () => {},
+    verifyPackage: async () => { attempts += 1; throw new NpmAvailabilityError('npm installation unavailable (E404)'); },
+  }), /Timed out.*installation unavailable.*Check npm/);
+  assert.equal(attempts, 2);
+  assert.equal(now, 10000);
+});
+test('installer classifies transient availability failures and removes failed consumers', async () => {
+  for (const prefix of ['npm error', 'npm ERR!']) {
+    for (const code of ['ETARGET', 'E404', 'ETIMEDOUT', 'ECONNRESET', 'EAI_AGAIN']) {
+      let directory;
+      const failure = Object.assign(new Error('install failed'), { stderr: Buffer.from(`${prefix} code ${code}\n`) });
+      await assert.rejects(verifyPublishedPackage(metadata, {
+        install: (_npm, args, options) => {
+          directory = options.cwd;
+          assert.ok(args.includes('--prefer-online'));
+          throw failure;
+        },
+      }), (error) => error instanceof NpmAvailabilityError && error.cause === failure);
+      assert.equal(fs.existsSync(directory), false);
+    }
+  }
+});
+test('installer never retries authentication or unrecognized failures', async () => {
+  for (const code of ['E401', 'E403', 'EINTEGRITY', 'UNKNOWN']) {
+    const failure = Object.assign(new Error('install failed'), { stderr: Buffer.from(`npm error code ${code}\n`) });
+    await assert.rejects(verifyPublishedPackage(metadata, { install: () => { throw failure; } }), (error) => error === failure);
+  }
 });
 
 function withInstalledFixture(run) {

@@ -4,6 +4,8 @@ const os = require('node:os');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 
+class NpmAvailabilityError extends Error {}
+
 const consumerChecks = `
   const key = '12345678901234567890';
   assert.equal(api.default, api.genTOTP);
@@ -37,15 +39,23 @@ function verifyInstalledPackage(directory, { name, version }) {
 }
 
 /** Install exactly what npm exposes, checking integrity and both module formats. */
-async function verifyPublishedPackage({ name, version, dist }) {
+async function verifyPublishedPackage({ name, version, dist }, { install = execFileSync, timeoutMs = 120000 } = {}) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'gen-totp-published-'));
   const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
   try {
     fs.writeFileSync(path.join(directory, 'package.json'), '{"name":"gen-totp-release-consumer","private":true}\n');
-    execFileSync(npm, [
-      'install', '--save-exact', '--ignore-scripts', '--no-audit', '--no-fund',
-      '--registry=https://registry.npmjs.org', `${name}@${version}`,
-    ], { cwd: directory, stdio: 'pipe', timeout: 120000 });
+    try {
+      install(npm, [
+        'install', '--save-exact', '--ignore-scripts', '--no-audit', '--no-fund',
+        '--prefer-online', '--package-lock=true', '--registry=https://registry.npmjs.org', `${name}@${version}`,
+      ], { cwd: directory, stdio: 'pipe', timeout: Math.max(1, Math.min(120000, timeoutMs)) });
+    } catch (error) {
+      const code = String(error.stderr ?? '').match(/npm (?:error|ERR!) code (\w+)/)?.[1] ?? error.code;
+      if (['ETARGET', 'E404', 'ETIMEDOUT', 'ECONNRESET', 'EAI_AGAIN', 'ENETUNREACH', 'ECONNREFUSED'].includes(code)) {
+        throw new NpmAvailabilityError(`npm installation unavailable (${code})`, { cause: error });
+      }
+      throw error;
+    }
     const lock = JSON.parse(fs.readFileSync(path.join(directory, 'package-lock.json'), 'utf8'));
     assert.equal(lock.packages?.[`node_modules/${name}`]?.integrity, dist.integrity, 'Installed artifact integrity does not match registry metadata');
     verifyInstalledPackage(directory, { name, version });
@@ -54,4 +64,4 @@ async function verifyPublishedPackage({ name, version, dist }) {
   }
 }
 
-module.exports = { verifyInstalledPackage, verifyPublishedPackage };
+module.exports = { verifyInstalledPackage, verifyPublishedPackage, NpmAvailabilityError };

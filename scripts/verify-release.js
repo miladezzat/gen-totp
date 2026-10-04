@@ -1,5 +1,5 @@
 const pkg = require('../package.json');
-const { verifyPublishedPackage } = require('./verify-published-package');
+const { verifyPublishedPackage, NpmAvailabilityError } = require('./verify-published-package');
 
 /** Wait for npm processing/replication after an accepted publish; never republish. */
 async function verifyRelease({ name, version }, {
@@ -29,14 +29,21 @@ async function verifyRelease({ name, version }, {
           || !/^sha512-[A-Za-z0-9+/]+={0,2}$/.test(released.dist.integrity)) {
         throw new Error('Registry returned invalid release metadata');
       }
-      await verifyPackage(released);
-      log(`Verified ${name}@${version}: ${released.dist.integrity}; installed CommonJS and ESM consumers pass`);
-      return released;
+      try {
+        await verifyPackage(released, { timeoutMs: Math.max(1, deadline - now()) });
+        log(`Verified ${name}@${version}: ${released.dist.integrity}; installed CommonJS and ESM consumers pass`);
+        return released;
+      } catch (error) {
+        if (!(error instanceof NpmAvailabilityError)) throw error;
+        lastError = error.message;
+      }
     }
-    if (response && ![404, 408, 429, 500, 502, 503, 504].includes(response.status)) {
-      throw new Error(`Release verification failed: HTTP ${response.status}`);
+    if (response && !response.ok) {
+      if (![404, 408, 429, 500, 502, 503, 504].includes(response.status)) {
+        throw new Error(`Release verification failed: HTTP ${response.status}`);
+      }
+      lastError = `HTTP ${response.status}`;
     }
-    if (response) lastError = `HTTP ${response.status}`;
     const remaining = deadline - now();
     if (remaining <= 0) break;
     log(`Waiting for npm to expose ${name}@${version} (attempt ${attempt}, ${lastError})`);
