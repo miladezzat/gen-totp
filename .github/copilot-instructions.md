@@ -1,51 +1,34 @@
-## Purpose
-This repo is a compact TypeScript library that implements RFC-6238 TOTP (and HOTP helpers). This file gives an AI coding agent the precise, code-linked guidance needed to be immediately productive.
+# Repository guidance
 
-## Quick commands
-- Build: `npm run build` (outputs `dist/` via `tsc`; `package.json` `main` points at `dist/index.js`).
-- Test: `npm test` (runs `mocha -r ts-node/register tests/**/*.spec.ts`). Tests import from `../src` so edit TS directly.
-- Lint: `npm run lint`; auto-fix: `npm run lint:fix`.
-- Coverage: `npm run coverage` (uses `nyc` + `mocha`).
-- Docs: `npm run docs:serve` (docsify).
+This is a Node.js TypeScript library for RFC 6238 TOTP and RFC 4226 HOTP.
 
-## Big picture / architecture
-- Single-module library. Core implementation: `src/index.ts` — exports `default genTOTP` plus named helpers: `base32ToHex`, `bytesToBase32`, `genHOTP`, `verifyHOTP`, `verifyTOTP`, `generateSecretKey`, `generateOtpAuthUri`.
-- Tests live under `tests/` and run directly against source TypeScript via `ts-node` (see `tests/index.spec.ts`, `tests/hotp.spec.ts`, `tests/rfc.spec.ts`).
-- Flow: any input key is normalized to a HEX string, then `jssha` is used with that HEX key and a 64-bit time/counter HEX value. Dynamic truncation is applied to the HMAC output to produce the numeric code.
+## Commands
 
-## Concrete, code-verified details (look here)
-- File: `src/index.ts` — single place for all logic, encoding handling, and exported types.
-- Encodings supported: `utf8` | `hex` | `base32` (see `KeyEncoding` and `genTOTP`).
-	- `hex`: the code lowercases the input then validates with `/^[0-9a-f]+$/`; uppercase hex is accepted because it's lowercased prior to validation. Error thrown: `Invalid hex character in key`.
-	- `base32`: `base32ToHex()` uppercases input, strips trailing `=` padding, accepts A–Z and 2–7, and throws `Invalid base32 character: <char>` on invalid glyphs.
-	- `utf8`: uses `TextEncoder` to produce bytes and converts to hex.
-- Time / timestamp: `genTOTP(..., timestamp?)` accepts an optional timestamp in unix milliseconds. Internally epoch seconds are computed then the time counter hex is `leftPad(decToHex(Math.floor(epoch / period)), 16, "0")` — keep this format if modifying windowing.
-- HMAC: uses `new JsSHA(algorithm, "HEX")`, `setHMACKey(hexKey, "HEX")`, `update(timeHex)`, `getHMAC("HEX")`. The dynamic truncation offset is derived from the last hex nibble of the HMAC string (see `offset = hexToDec(hmac[hmac.length - 1])`).
+- Install: `npm ci` (Node 24 is pinned in `.nvmrc`; CI also checks Node 22).
+- Lint: `npm run lint`; fix: `npm run lint:fix`.
+- Build: `npm run build` (CommonJS, ESM, and declarations under `dist/`).
+- Test: `npm test` (TypeScript tests compile with `tsconfig.test.json` before Mocha).
+- Release tests: `npm run test:release` (stubbed registry responses).
+- Package checks: `npm run smoke` and `npm run smoke:install`.
+- Docs: `npm run docs:serve`, `npm run docs`, `npm run docs:preview`.
+- Docs checks: `npm run smoke:docs` and `npm run smoke:docs:browser`.
 
-## Verification semantics & defaults
-- `verifyTOTP`: default `window = 1`, `period = 30` (see `verifyTOTP` in `src/index.ts`). Timestamp passed to `genTOTP` is in milliseconds.
-- `verifyHOTP`: default `window = 10` and returns `{ newCounter }` on success or `null` on failure.
+## Source and public API
 
-## Tests & determinism notes
-- Tests use an explicit `timestamp` (unix ms) for determinism. See `tests/rfc.spec.ts` for RFC-6238 vectors and `tests/index.spec.ts` for behavior and exact error strings.
-- Tests run with `mocha -r ts-node/register` so edits should be made against `src/` (not `dist/`).
+All runtime logic is in `src/index.ts`. Preserve `default genTOTP`, named OTP/encoding/formatting helpers, and exported option types. Consumers use CommonJS named imports or native ESM default/named imports.
 
-## Where to make common changes
-- Add/remove supported hashing algorithms: edit `FixedLengthVariantType` in `src/index.ts` and ensure `JsSHA` supports it.
-- Change base32 decoding/encoding: edit `base32ToHex()` / `bytesToBase32()` in `src/index.ts` (single source of truth).
-- Modify OTP windowing/counter format: update the `leftPad(decToHex(Math.floor(epoch / period)), 16, "0")` usage and adapt tests in `tests/*.spec.ts`.
-- API surface: preserve `export default genTOTP` and TypeScript signatures to avoid breaking consumers.
+Keys become complete HEX bytes before HMAC generation with jssha. UTF-8 uses `Buffer.from`; HEX validates complete byte pairs; Base32 validates alphabet, length, padding, and unused bits. Counters are non-negative safe integers written as 16-character big-endian hex. Dynamic truncation produces a fixed-width decimal string.
 
-## Dev workflow & release
-- Commit: `npm run commit` (uses `git-cz`). Husky hooks installed via `npm run prepare`.
-- Release: `npm run release` (uses `standard-version`). Run `npm run build` before publishing because `main`/`types` point to `dist/`.
+TOTP timestamps are Unix milliseconds; periods are seconds. `verifyTOTP` defaults to window 1 and skips negative counters. `verifyHOTP` defaults to lookahead 10 and returns `{ newCounter }` or `null`. Windows are bounded to 0 through 1000. Token comparison uses `timingSafeEqual`, and verification scans the full window.
 
-## Small examples (from repo)
-- `genTOTP('test-key')` → 6-digit default (see `tests/index.spec.ts`).
-- `genTOTP('JBSWY3DPEHPK3PXP', { digits: 4, encoding: 'base32' })` → base32 example used in tests.
+## Changes and validation
 
-## Quick pointers for contributors
-- Refer to `tests/rfc.spec.ts` for canonical expected outputs (RFC test vectors).
-- If you change an error message or function signature, update `tests/index.spec.ts` accordingly — tests assert exact strings like `Invalid hex character in key` and `Invalid base32 character: <char>`.
+Every behavior fix needs regression coverage. Use the complete RFC vectors and independent Node crypto comparisons. Package entry changes must pass packed installation checks with CommonJS, native ESM, and TypeScript consumers.
 
-If anything here is unclear or you want low-level walkthroughs (e.g., a step-through of `base32ToHex()` or how the dynamic truncation index is computed), tell me which part to expand.
+Edit documentation source in `documentation/`, then run `npm run docs` and commit the generated `docs/` output. Keep README, changelog, and API guides consistent with actual behavior. Preserve `otp.js.org` and the license terms in `LICENSE.md`.
+
+## Release
+
+The `publish.yml` workflow compares the local stable version with npm latest, skips equal versions, rejects older versions, and uses OIDC to publish only a new version. npm trusted publisher settings must authorize `miladezzat/gen-totp` and `publish.yml`. See `documentation/releasing.md`.
+
+Commits and PRs are authored by the user alone. Do not add model coauthors, generated-by footers, branding, or author overrides.

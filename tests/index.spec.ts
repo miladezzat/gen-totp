@@ -66,33 +66,33 @@ describe("TOTP Verification", () => {
   it("verifies a correct token at the current timestamp", () => {
     const token = genTOTP(key, options, ts);
     const isValid = verifyTOTP(key, token, { ...options, window: 0 }, ts);
-    expect(isValid).to.be.true;
+    expect(isValid).to.equal(true);
   });
 
   it("rejects an incorrect token", () => {
     const isValid = verifyTOTP(key, "00000000", options, ts);
-    expect(isValid).to.be.false;
+    expect(isValid).to.equal(false);
   });
 
   it("verifies a token within the past window", () => {
     const pastTs = ts - period * 1000;
     const token = genTOTP(key, options, pastTs);
     const isValid = verifyTOTP(key, token, options, ts);
-    expect(isValid).to.be.true;
+    expect(isValid).to.equal(true);
   });
 
   it("verifies a token within the future window", () => {
     const futureTs = ts + period * 1000;
     const token = genTOTP(key, options, futureTs);
     const isValid = verifyTOTP(key, token, options, ts);
-    expect(isValid).to.be.true;
+    expect(isValid).to.equal(true);
   });
 
   it("rejects a token outside the window", () => {
     const outsideTs = ts - 2 * period * 1000;
     const token = genTOTP(key, options, outsideTs);
     const isValid = verifyTOTP(key, token, { ...options, window: 0 }, ts);
-    expect(isValid).to.be.false;
+    expect(isValid).to.equal(false);
   });
 });
 

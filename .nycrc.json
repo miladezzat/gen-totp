@@ -4,8 +4,8 @@
   "functions": 60,
   "statements": 60,
   "check-coverage": true,
-  "exclude": [
-    "config.js",
-    "test"
-  ]
+  "include": [
+    "build/test/src/**/*.js"
+  ],
+  "exclude": []
 }

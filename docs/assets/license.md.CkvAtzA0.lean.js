@@ -1,0 +1,1 @@
+import{_ as o,o as t,c as i,a2 as n}from"./chunks/framework.D7WGirly.js";const d=JSON.parse('{"title":"License","description":"","frontmatter":{},"headers":[],"relativePath":"license.md","filePath":"license.md"}'),s={name:"license.md"};function a(r,e,c,l,p,T){return t(),i("div",null,[...e[0]||(e[0]=[n("",6)])])}const E=o(s,[["render",a]]);export{d as __pageData,E as default};

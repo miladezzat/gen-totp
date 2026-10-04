@@ -1,74 +1,103 @@
 {
-    "name": "gen-totp",
-    "version": "3.0.1",
-    "description": "A time-based One-time Password generator that uses current time as a source of uniqueness, following RFC 6238.",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "scripts": {
-        "depcheck": "npm-check",
-        "test": "mocha -r ts-node/register tests/**/*.spec.ts",
-        "build": "tsc",
-        "lint": "eslint **/*.ts",
-        "lint:fix": "eslint **/*.ts --fix",
-        "docs:serve": "docsify serve ./docs",
-        "coverage": "nyc --reporter=html --reporter=text  npm run test",
-        "git-workflow": "npm run lint",
-        "commit": "git-cz",
-        "prepare": "husky install",
-        "release": "standard-version"
+  "name": "gen-totp",
+  "version": "3.0.1",
+  "description": "A time-based One-time Password generator that uses current time as a source of uniqueness, following RFC 6238.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "npm run build:test && mocha \"build/test/tests/**/*.spec.js\"",
+    "test:release": "node --test tests/release.test.js",
+    "build": "node scripts/build.js",
+    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" --max-warnings 0",
+    "lint:fix": "npm run lint -- --fix",
+    "docs:serve": "vitepress dev documentation --port 3101",
+    "docs:preview": "vitepress preview documentation --port 3101",
+    "docs": "node scripts/build-docs.js",
+    "docs:build": "npm run docs",
+    "smoke": "node tests/package-smoke.js",
+    "smoke:install": "node tests/package-install-smoke.js",
+    "smoke:docs": "node tests/docs-smoke.js",
+    "smoke:docs:browser": "node tests/docs-browser-smoke.js",
+    "coverage": "nyc --reporter=html --reporter=text npm test",
+    "git-workflow": "npm run lint",
+    "prepare": "husky",
+    "prepublishOnly": "npm run build",
+    "release": "standard-version",
+    "build:test": "tsc -p tsconfig.test.json"
+  },
+  "author": "Milad Fahmy <miladezzat.f@gmail.com>",
+  "contributors": [
+    {
+      "name": "Milad Fahmy <miladezzat>",
+      "email": "milad@sakneen.com"
+    }
+  ],
+  "dependencies": {
+    "jssha": "^3.3.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.21",
+    "@types/chai-sorted": "^0.2.3",
+    "@types/chai-subset": "^1.3.5",
+    "@types/mocha": "^10.0.7",
+    "@typescript-eslint/eslint-plugin": "^8.71.0",
+    "@typescript-eslint/parser": "^8.71.0",
+    "chai": "^4.3.4",
+    "chai-sorted": "^0.2.0",
+    "chai-subset": "^1.6.0",
+    "eslint": "^10.12.0",
+    "husky": "^9.1.6",
+    "mocha": "^12.0.3",
+    "nyc": "^18.0.0",
+    "standard-version": "^9.5.0",
+    "typescript": "^5.9.3",
+    "@types/node": "^20.14.11",
+    "vitepress": "1.6.4",
+    "playwright": "^1.63.0"
+  },
+  "license": "SEE LICENSE IN LICENSE.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miladezzat/gen-totp.git"
+  },
+  "keywords": [
+    "otp",
+    "generate-otp",
+    "totp",
+    "mobile-verification"
+  ],
+  "bugs": {
+    "url": "https://github.com/miladezzat/gen-totp/issues"
+  },
+  "homepage": "https://otp.js.org",
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "overrides": {
+    "vitepress": {
+      "vite": "6.4.3"
     },
-    "author": "Milad E. Fahmy <miladezzat.f@gmail.com>",
-    "contributors": [
-        {
-            "name": "Milad E. Fahmy <miladezzat>",
-            "email": "milad@sakneen.com"
-        }
-    ],
-    "dependencies": {
-        "jssha": "^3.3.1"
+    "mocha": {
+      "serialize-javascript": "^7.0.6"
     },
-    "devDependencies": {
-        "@types/chai": "^4.2.21",
-        "@types/chai-sorted": "^0.2.3",
-        "@types/chai-subset": "^1.3.5",
-        "@types/mocha": "^10.0.7",
-        "@typescript-eslint/eslint-plugin": "^8.6.0",
-        "@typescript-eslint/parser": "^8.6.0",
-        "chai": "^4.3.4",
-        "chai-sorted": "^0.2.0",
-        "chai-subset": "^1.6.0",
-        "cross-env": "^7.0.3",
-        "docsify-cli": "^4.4.3",
-        "eslint": "^8.57.1",
-        "eslint-config-airbnb-base": "^15.0.0",
-        "eslint-config-prettier": "^9.1.0",
-        "eslint-plugin-import": "^2.30.0",
-        "eslint-plugin-prettier": "^5.2.1",
-        "git-cz": "^4.8.0",
-        "husky": "^9.1.6",
-        "mocha": "^10.0.0",
-        "npm-check": "^6.0.1",
-        "nyc": "^17.0.0",
-        "prettier": "^3.3.3",
-        "ts-node": "^10.1.0",
-        "tsconfig-paths": "^4.2.0",
-        "standard-version": "^9.5.0",
-        "typescript": "^4.3.5",
-        "@types/node": "^20.14.11"
-    },
-    "license": "ISC",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/miladezzat/gen-totp.git"
-    },
-    "keywords": [
-        "otp",
-        "generate-otp",
-        "totp",
-        "mobile-verification"
-    ],
-    "bugs": {
-        "url": "https://github.com/miladezzat/gen-totp/issues"
-    },
-    "homepage": "https://github.com/miladezzat/gen-totp"
+    "brace-expansion@2": "^2.1.7",
+    "js-yaml@4": "^4.3.2"
+  }
 }

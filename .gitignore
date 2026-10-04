@@ -1,3 +1,10 @@
-node_modules
-dist
-build
+node_modules/
+dist/
+build/
+coverage/
+.nyc_output/
+.DS_Store
+documentation/.vitepress/cache/
+documentation/.vitepress/dist/
+.playwright-cli/
+output/playwright/
