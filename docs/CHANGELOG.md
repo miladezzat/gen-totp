@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## Unreleased
+
+### Fixed
+
+- Preserve leading zeroes and the configured digit count in TOTP/HOTP output.
+- Decode Base32 into complete bytes and validate padding, length, and unused bits.
+- Validate OTP configuration, timestamps, safe counters, token shape, and bounded verification windows.
+- Skip pre-epoch counters during TOTP verification; validate authenticator URI inputs and normalize secrets.
+- Build to the published dist entry point and provide native ESM default imports and type declarations.
+- Make lint check TypeScript files, commit a reproducible lockfile, and align package license metadata with LICENSE.md.
+
+### Documentation and release tooling
+
+- Replace Docsify with VitePress guides, local search, API reference, migration and release documentation.
+- Commit generated GitHub Pages output with the existing otp.js.org domain.
+- Match encrypt-rsa's version-gated npm OIDC publication and exact-version registry verification.
+- Test Node 22 and 24, packed package consumers, RFC vectors, and documentation navigation in CI.
+
+### [3.0.1](https://github.com/miladezzat/gen-totp/compare/v3.0.0...v3.0.1) (2026-01-31)
+
+## [3.0.0](https://github.com/miladezzat/gen-totp/compare/v2.0.7...v3.0.0) (2026-01-31)
+
 ### [2.0.7](https://github.com/miladezzat/gen-totp/compare/v2.0.4...v2.0.7) (2025-05-21)
 
 

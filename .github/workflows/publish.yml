@@ -1,0 +1,71 @@
+# npm trusted publisher: miladezzat/gen-totp, workflow publish.yml, no environment.
+name: NPM publish
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+jobs:
+  check-release:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.release.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check registry version
+        id: release
+        run: node scripts/check-release.js
+
+  build-and-publish:
+    needs: check-release
+    if: needs.check-release.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Use an OIDC-capable npm CLI
+        run: npm install --global npm@11.13.0
+      - run: npm ci
+        env:
+          HUSKY: 0
+      - run: npm run lint
+      - run: npm run build
+      - run: npm test && npm run test:release
+      - run: npm run smoke && npm run smoke:install
+      - run: npm run docs && npm run smoke:docs
+      - run: git diff --exit-code -- docs
+      - run: npx playwright install --with-deps chromium
+      - run: npm run smoke:docs:browser
+      - name: Publish to npm
+        run: npm publish --access public
+      - name: Verify published version
+        run: node scripts/verify-release.js
+
+  verify-existing-release:
+    needs: check-release
+    if: needs.check-release.outputs.publish == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node scripts/verify-release.js

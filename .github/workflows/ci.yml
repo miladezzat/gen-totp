@@ -2,28 +2,38 @@ name: CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [master, development]
   pull_request:
-    branches: [ main, master ]
+    branches: [master, development]
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [18.x]
-
+        node-version: [22.x, 24.x]
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install dependencies
-        run: npm ci
-      - name: Run lint
-        run: npm run lint
-      - name: Run tests
-        run: npm test
-      - name: Build
-        run: npm run build
+          cache: npm
+      - run: npm ci
+        env:
+          HUSKY: 0
+      - run: npm run lint
+      - run: npm run build
+      - run: npm test
+      - run: npm run test:release
+      - run: npm run smoke
+      - run: npm run smoke:install
+      - run: npm run docs
+      - run: npm run smoke:docs
+      - name: Check committed documentation
+        run: git diff --exit-code -- docs
+      - run: npx playwright install --with-deps chromium
+      - run: npm run smoke:docs:browser

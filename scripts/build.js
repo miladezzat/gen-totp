@@ -1,0 +1,10 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const { execFileSync } = require('node:child_process');
+const root = path.resolve(__dirname, '..');
+fs.rmSync(path.join(root, 'dist'), { recursive: true, force: true });
+execFileSync(process.execPath, [require.resolve('typescript/bin/tsc'), '-p', 'tsconfig.json'], { cwd: root, stdio: 'inherit' });
+const api = require('../dist/index.js');
+const names = Object.keys(api).filter((name) => name !== 'default');
+fs.writeFileSync(path.join(root, 'dist/index.mjs'), `import api from './index.js';\nexport const { ${names.join(', ')} } = api;\nexport default api.default;\n`);
+fs.copyFileSync(path.join(root, 'dist/index.d.ts'), path.join(root, 'dist/index.d.mts'));

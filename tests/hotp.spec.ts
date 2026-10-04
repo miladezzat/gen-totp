@@ -34,7 +34,7 @@ describe("HOTP Verification", () => {
 
   it("rejects an incorrect token", () => {
     const result = verifyHOTP(key, "00000000", 0, options);
-    expect(result).to.be.null;
+    expect(result).to.equal(null);
   });
 
   it("verifies a token within the window and returns the new counter", () => {
@@ -46,6 +46,6 @@ describe("HOTP Verification", () => {
   it("rejects a token outside the window", () => {
     const token = genHOTP(key, 11, options);
     const result = verifyHOTP(key, token, 0, { ...options, window: 10 });
-    expect(result).to.be.null;
+    expect(result).to.equal(null);
   });
 });

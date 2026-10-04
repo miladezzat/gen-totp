@@ -1,180 +1,23 @@
 import JsSHA from "jssha";
-import { randomBytes } from "crypto";
+import { randomBytes, timingSafeEqual } from "node:crypto";
 
-/**
- * Left pads a string to a specified length.
- * @param {string} str - The string to pad.
- * @param {number} len - The desired length.
- * @param {string} pad - The padding character.
- * @returns {string} The padded string.
- */
-export function leftPad(str: string, len: number, pad: string): string {
-  return str.length >= len ? str : pad.repeat(len - str.length) + str;
-}
+const BASE32_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+const ALGORITHMS = [
+  "SHA-1", "SHA-224", "SHA-256", "SHA-384", "SHA-512",
+  "SHA3-224", "SHA3-256", "SHA3-384", "SHA3-512",
+] as const;
 
-/**
- * Decodes a base32-encoded string to hexadecimal.
- * Supports RFC 4648 Base32.
- * @param {string} input - The base32 string.
- * @returns {string} The decoded hexadecimal string.
- */
-export function base32ToHex(input: string): string {
-  const base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-  const cleanInput = input.toUpperCase().replace(/=+$/, "");
-  let bits = "";
-  let hex = "";
-
-  for (const char of cleanInput) {
-    const val = base32Chars.indexOf(char);
-    if (val === -1) {
-      throw new Error(`Invalid base32 character: ${char}`);
-    }
-    bits += leftPad(val.toString(2), 5, "0");
-  }
-
-  for (let i = 0; i + 4 <= bits.length; i += 4) {
-    const chunk = bits.slice(i, i + 4);
-    hex += parseInt(chunk, 2).toString(16);
-  }
-
-  return hex;
-}
-
-/**
- * Converts a hexadecimal string to a decimal number.
- * @param {string} hex - The hexadecimal string.
- * @returns {number} The decimal number.
- */
-export function hexToDec(hex: string): number {
-  return parseInt(hex, 16);
-}
-
-/**
- * Converts a decimal number to a hexadecimal string.
- * @param {number} dec - The decimal number.
- * @returns {string} The hexadecimal string.
- */
-export function decToHex(dec: number): string {
-  return leftPad(Math.round(dec).toString(16), 2, "0");
-}
-
-export type FixedLengthVariantType =
-  | "SHA-1"
-  | "SHA-224"
-  | "SHA-256"
-  | "SHA-384"
-  | "SHA-512"
-  | "SHA3-224"
-  | "SHA3-256"
-  | "SHA3-384"
-  | "SHA3-512";
-
+export type FixedLengthVariantType = typeof ALGORITHMS[number];
 export type KeyEncoding = "utf8" | "hex" | "base32";
 
-/**
- * Options for generating a TOTP.
- */
-interface GenTOTPOptions {
-  period?: number;
+export interface GenHOTPOptions {
   algorithm?: FixedLengthVariantType;
   digits?: number;
   encoding?: KeyEncoding;
 }
-
-/**
- * Generates a TOTP (Time-based One-Time Password).
- * @param {string} key - The secret key.
- * @param {GenTOTPOptions} [options={}] - Configuration options.
- * @param {number} [options.period=30] - Time period in seconds.
- * @param {string} [options.algorithm='SHA-1'] - Hash algorithm.
- * @param {number} [options.digits=6] - Length of the resulting OTP.
- * @param {KeyEncoding} [options.encoding='utf8'] - Encoding of the key ('utf8', 'hex', or 'base32').
- * @returns {string} The generated OTP.
- */
-export function genTOTP(
-  key: string,
-  options: GenTOTPOptions = {},
-  // Optional unix-milliseconds timestamp for deterministic outputs / testing
-  timestamp?: number,
-): string {
-  const {
-    period = 30,
-    algorithm = "SHA-1",
-    digits = 6,
-    encoding = "utf8",
-  } = options;
-
-  const epoch = Math.floor((typeof timestamp === "number" ? timestamp : Date.now()) / 1000);
-  const timeHex = leftPad(decToHex(Math.floor(epoch / period)), 16, "0");
-
-  let hexKey: string;
-
-  if (encoding === "hex") {
-    const lower = key.toLowerCase();
-    if (!/^[0-9a-f]+$/.test(lower)) {
-      throw new Error("Invalid hex character in key");
-    }
-    hexKey = lower;
-  } else if (encoding === "base32") {
-    hexKey = base32ToHex(key);
-  } else {
-    // utf8 to hex
-    const encoder = new TextEncoder();
-    hexKey = Array.from(encoder.encode(key))
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-  }
-
-  const shaObj = new JsSHA(algorithm, "HEX");
-  shaObj.setHMACKey(hexKey, "HEX");
-  shaObj.update(timeHex);
-
-  const hmac = shaObj.getHMAC("HEX");
-  const offset = hexToDec(hmac[hmac.length - 1]);
-  const code = (hexToDec(hmac.slice(offset * 2, offset * 2 + 8)) & 0x7fffffff).toString();
-
-  return code.slice(-digits);
-}
-
-/**
- * Options for verifying a TOTP.
- */
-export interface VerifyTOTPOptions extends GenTOTPOptions {
-  window?: number;
-}
-
-
-/**
- * Verifies a TOTP (Time-based One-Time Password).
- * @param {string} key - The secret key.
- * @param {string} token - The token to verify.
- * @param {VerifyTOTPOptions} [options={}] - Configuration options.
- * @returns {boolean} True if the token is valid, false otherwise.
- */
-export function verifyTOTP(
-  key: string,
-  token: string,
-  options: VerifyTOTPOptions = {},
-  // Optional unix-milliseconds timestamp for deterministic outputs / testing
-  timestamp?: number,
-): boolean {
-  const { window = 1, period = 30 } = options;
-  const now = typeof timestamp === "number" ? timestamp : Date.now();
-
-  for (let i = -window; i <= window; i++) {
-    const stepTimestamp = now + i * period * 1000;
-    const generatedToken = genTOTP(key, options, stepTimestamp);
-    if (generatedToken === token) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/**
- * Options for generating an otpauth URI.
- */
+export interface GenTOTPOptions extends GenHOTPOptions { period?: number; }
+export interface VerifyTOTPOptions extends GenTOTPOptions { window?: number; }
+export interface VerifyHOTPOptions extends GenHOTPOptions { window?: number; }
 export interface OtpAuthUriOptions {
   accountName: string;
   issuer: string;
@@ -183,170 +26,199 @@ export interface OtpAuthUriOptions {
   digits?: number;
 }
 
-/**
- * Generates an otpauth URI for QR code generation.
- * @param {string} key - The base32-encoded secret key.
- * @param {OtpAuthUriOptions} options - Configuration options.
- * @returns {string} The otpauth URI.
- */
-export function generateOtpAuthUri(
-  key: string,
-  options: OtpAuthUriOptions,
-): string {
-  const {
-    accountName,
-    issuer,
-    period = 30,
-    algorithm = "SHA-1",
-    digits = 6,
-  } = options;
+export function leftPad(str: string, len: number, pad: string): string {
+  return str.length >= len ? str : pad.repeat(len - str.length) + str;
+}
 
-  try {
-    base32ToHex(key);
-  } catch (e) {
-    throw new Error("Invalid base32 key for otpauth URI");
+/** Decode complete bytes and reject malformed lengths, padding, and unused bits. */
+export function base32ToHex(input: string): string {
+  if (typeof input !== "string") throw new Error("Invalid base32 input");
+  const rawInput = input.replace(/=+$/, "");
+  // Check characters before length to preserve the public invalid-character error.
+  for (const char of rawInput) {
+    if (!/^[A-Z2-7]$/i.test(char)) throw new Error(`Invalid base32 character: ${char}`);
   }
+  const cleanInput = rawInput.toUpperCase();
+  const padding = input.length - cleanInput.length;
+  const remainder = cleanInput.length % 8;
+  if (![0, 2, 4, 5, 7].includes(remainder)
+    || (padding > 0 && (input.length % 8 !== 0 || padding !== (8 - remainder) % 8))) {
+    throw new Error("Invalid base32 length or padding");
+  }
+  let buffer = 0;
+  let bitCount = 0;
+  let hex = "";
+  for (const char of cleanInput) {
+    buffer = (buffer << 5) | BASE32_CHARS.indexOf(char);
+    bitCount += 5;
+    if (bitCount >= 8) {
+      bitCount -= 8;
+      hex += ((buffer >>> bitCount) & 0xff).toString(16).padStart(2, "0");
+      buffer &= (1 << bitCount) - 1;
+    }
+  }
+  if (buffer !== 0) throw new Error("Invalid base32 unused bits");
+  return hex;
+}
 
-  const encodedIssuer = encodeURIComponent(issuer);
-  const encodedAccountName = encodeURIComponent(accountName);
-  const label = `${encodedIssuer}:${encodedAccountName}`;
+export function hexToDec(hex: string): number { return parseInt(hex, 16); }
+export function decToHex(dec: number): string {
+  return leftPad(Math.round(dec).toString(16), 2, "0");
+}
 
+function validateOtpOptions(options: GenHOTPOptions): void {
+  const { digits = 6, algorithm = "SHA-1", encoding = "utf8" } = options;
+  if (!Number.isInteger(digits) || digits < 1 || digits > 10) {
+    throw new Error("Invalid digits; must be an integer between 1 and 10");
+  }
+  if (!ALGORITHMS.includes(algorithm)) throw new Error("Invalid algorithm");
+  if (!["utf8", "hex", "base32"].includes(encoding)) throw new Error("Invalid key encoding");
+}
+function validatePeriod(period: number): void {
+  if (!Number.isFinite(period) || period <= 0) {
+    throw new Error("Invalid period; must be a positive number");
+  }
+}
+function validateCounter(counter: number): void {
+  if (!Number.isSafeInteger(counter) || counter < 0) {
+    throw new Error("Invalid counter; must be a non-negative safe integer");
+  }
+}
+function validateWindow(window: number): void {
+  if (!Number.isInteger(window) || window < 0 || window > 1000) {
+    throw new Error("Invalid window; must be an integer between 0 and 1000");
+  }
+}
+function timeCounter(timestamp: number, period: number): number {
+  validatePeriod(period);
+  if (!Number.isFinite(timestamp) || timestamp < 0 || timestamp > Number.MAX_SAFE_INTEGER) {
+    throw new Error("Invalid timestamp; must be non-negative Unix milliseconds within the safe integer range");
+  }
+  const counter = Math.floor(timestamp / 1000 / period);
+  validateCounter(counter);
+  return counter;
+}
+function keyToHex(key: string, encoding: KeyEncoding): string {
+  if (typeof key !== "string" || key.length === 0) throw new Error("Invalid key; must be a non-empty string");
+  if (encoding === "hex") {
+    if (!/^(?:[0-9a-f]{2})+$/i.test(key)) throw new Error("Invalid hex character in key");
+    return key.toLowerCase();
+  }
+  if (encoding === "base32") {
+    const hex = base32ToHex(key);
+    if (hex.length === 0) throw new Error("Invalid key; must contain at least one byte");
+    return hex;
+  }
+  return Buffer.from(key, "utf8").toString("hex");
+}
+
+/** HOTP with a big-endian counter and fixed-width decimal output. */
+export function genHOTP(key: string, counter: number, options: GenHOTPOptions = {}): string {
+  validateOtpOptions(options);
+  validateCounter(counter);
+  const { algorithm = "SHA-1", digits = 6, encoding = "utf8" } = options;
+  const sha = new JsSHA(algorithm, "HEX");
+  sha.setHMACKey(keyToHex(key, encoding), "HEX");
+  sha.update(counter.toString(16).padStart(16, "0"));
+  const hmac = sha.getHMAC("HEX");
+  const offset = hexToDec(hmac[hmac.length - 1]);
+  const code = hexToDec(hmac.slice(offset * 2, offset * 2 + 8)) & 0x7fffffff;
+  return (code % (10 ** digits)).toString().padStart(digits, "0");
+}
+/** timestamp is Unix milliseconds; defaults to Date.now(). */
+export function genTOTP(key: string, options: GenTOTPOptions = {}, timestamp = Date.now()): string {
+  const { period = 30 } = options;
+  return genHOTP(key, timeCounter(timestamp, period), options);
+}
+function validToken(token: string, digits: number): boolean {
+  return typeof token === "string" && token.length === digits && !/[^0-9]/.test(token);
+}
+function tokensEqual(expected: string, token: string): boolean {
+  return timingSafeEqual(Buffer.from(expected, "ascii"), Buffer.from(token, "ascii"));
+}
+/** Check previous/current/next periods by default; skip counters before the epoch. */
+export function verifyTOTP(
+  key: string, token: string, options: VerifyTOTPOptions = {}, timestamp = Date.now(),
+): boolean {
+  const { window = 1, period = 30, digits = 6 } = options;
+  validateWindow(window);
+  validateOtpOptions(options);
+  const counter = timeCounter(timestamp, period);
+  validateCounter(counter + window);
+  keyToHex(key, options.encoding ?? "utf8");
+  if (!validToken(token, digits)) return false;
+  let matched = false;
+  for (let offset = -window; offset <= window; offset += 1) {
+    if (counter + offset < 0) continue;
+    const equal = tokensEqual(genHOTP(key, counter + offset, options), token);
+    matched = equal || matched;
+  }
+  return matched;
+}
+/** Return the next counter to persist atomically, or null when verification fails. */
+export function verifyHOTP(
+  key: string, token: string, counter: number, options: VerifyHOTPOptions = {},
+): { newCounter: number } | null {
+  const { window = 10, digits = 6 } = options;
+  validateWindow(window);
+  validateOtpOptions(options);
+  validateCounter(counter);
+  validateCounter(counter + window + 1);
+  keyToHex(key, options.encoding ?? "utf8");
+  if (!validToken(token, digits)) return null;
+  let result: { newCounter: number } | null = null;
+  for (let offset = 0; offset <= window; offset += 1) {
+    const equal = tokensEqual(genHOTP(key, counter + offset, options), token);
+    if (equal && result === null) result = { newCounter: counter + offset + 1 };
+  }
+  return result;
+}
+/** Build an authenticator URI from a canonical Base32 secret. */
+export function generateOtpAuthUri(key: string, options: OtpAuthUriOptions): string {
+  const { accountName, issuer, period = 30, algorithm = "SHA-1", digits = 6 } = options;
+  try { keyToHex(key, "base32"); }
+  catch { throw new Error("Invalid base32 key for otpauth URI"); }
+  validateOtpOptions({ algorithm, digits });
+  validatePeriod(period);
+  if (!["SHA-1", "SHA-256", "SHA-512"].includes(algorithm)) {
+    throw new Error("Unsupported otpauth algorithm; use SHA-1, SHA-256, or SHA-512");
+  }
+  if (digits !== 6 && digits !== 8) throw new Error("Invalid otpauth digits; must be 6 or 8");
+  if (!Number.isInteger(period)) throw new Error("Invalid otpauth period; must be a positive integer");
+  if (typeof accountName !== "string" || accountName.trim().length === 0 || accountName.includes(":")) {
+    throw new Error("Invalid account name; must be non-empty and contain no colon");
+  }
+  if (typeof issuer !== "string" || issuer.trim().length === 0 || issuer.includes(":")) {
+    throw new Error("Invalid issuer; must be non-empty and contain no colon");
+  }
+  const label = `${encodeURIComponent(issuer)}:${encodeURIComponent(accountName)}`;
   const query = new URLSearchParams({
-    secret: key,
-    issuer,
-    algorithm: algorithm.replace("SHA-", "SHA"),
-    digits: digits.toString(),
-    period: period.toString(),
+    secret: key.toUpperCase().replace(/=+$/, ""), issuer,
+    algorithm: algorithm.replace("SHA-", "SHA"), digits: digits.toString(), period: period.toString(),
   });
-
   return `otpauth://totp/${label}?${query.toString()}`;
 }
-
-/**
- * Encodes a byte array to a base32 string.
- * @param {Uint8Array} bytes - The bytes to encode.
- * @returns {string} The base32-encoded string.
- */
 export function bytesToBase32(bytes: Uint8Array): string {
-  const base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-  let bits = "";
-  for (let i = 0; i < bytes.length; i++) {
-    bits += leftPad(bytes[i].toString(2), 8, "0");
-  }
-
-  let base32 = "";
-  for (let i = 0; i < bits.length; i += 5) {
-    let chunk = bits.slice(i, i + 5);
-    if (chunk.length < 5) {
-      chunk += "0".repeat(5 - chunk.length);
+  let buffer = 0;
+  let bitCount = 0;
+  let output = "";
+  for (const byte of bytes) {
+    buffer = (buffer << 8) | byte;
+    bitCount += 8;
+    while (bitCount >= 5) {
+      bitCount -= 5;
+      output += BASE32_CHARS[(buffer >>> bitCount) & 31];
+      buffer &= (1 << bitCount) - 1;
     }
-    const val = parseInt(chunk, 2);
-    base32 += base32Chars[val];
   }
-
-  return base32;
+  if (bitCount > 0) output += BASE32_CHARS[(buffer << (5 - bitCount)) & 31];
+  return output;
 }
-
-/**
- * Generates a cryptographically secure secret key.
- * @param {number} [length=20] - The length of the key in bytes.
- * @returns {string} The base32-encoded secret key.
- */
+/** Generate a random secret; length is measured in bytes. */
 export function generateSecretKey(length = 20): string {
-  const bytes = randomBytes(length);
-  return bytesToBase32(bytes);
-}
-
-/**
- * Options for generating an HOTP.
- */
-export interface GenHOTPOptions {
-  algorithm?: FixedLengthVariantType;
-  digits?: number;
-  encoding?: KeyEncoding;
-}
-
-/**
- * Generates an HOTP (HMAC-based One-Time Password).
- * @param {string} key - The secret key.
- * @param {number} counter - The counter value.
- * @param {GenHOTPOptions} [options={}] - Configuration options.
- * @returns {string} The generated OTP.
- */
-export function genHOTP(
-  key: string,
-  counter: number,
-  options: GenHOTPOptions = {},
-): string {
-  const {
-    algorithm = "SHA-1",
-    digits = 6,
-    encoding = "utf8",
-  } = options;
-
-  const counterHex = leftPad(decToHex(counter), 16, "0");
-
-  let hexKey: string;
-
-  if (encoding === "hex") {
-    const lower = key.toLowerCase();
-    if (!/^[0-9a-f]+$/.test(lower)) {
-      throw new Error("Invalid hex character in key");
-    }
-    hexKey = lower;
-  } else if (encoding === "base32") {
-    hexKey = base32ToHex(key);
-  } else {
-    // utf8 to hex
-    const encoder = new TextEncoder();
-    hexKey = Array.from(encoder.encode(key))
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
+  if (!Number.isSafeInteger(length) || length < 1) {
+    throw new Error("Invalid secret length; must be a positive safe integer");
   }
-
-  const shaObj = new JsSHA(algorithm, "HEX");
-  shaObj.setHMACKey(hexKey, "HEX");
-  shaObj.update(counterHex);
-
-  const hmac = shaObj.getHMAC("HEX");
-  const offset = hexToDec(hmac[hmac.length - 1]);
-  const code = (hexToDec(hmac.slice(offset * 2, offset * 2 + 8)) & 0x7fffffff).toString();
-
-  return code.slice(-digits);
+  return bytesToBase32(randomBytes(length));
 }
-
-/**
- * Options for verifying an HOTP.
- */
-export interface VerifyHOTPOptions extends GenHOTPOptions {
-  window?: number;
-}
-
-/**
- * Verifies an HOTP (HMAC-based One-Time Password).
- * @param {string} key - The secret key.
- * @param {string} token - The token to verify.
- * @param {number} counter - The current counter value.
- * @param {VerifyHOTPOptions} [options={}] - Configuration options.
- * @returns {{newCounter: number} | null} The new counter value if the token is valid, otherwise null.
- */
-export function verifyHOTP(
-  key: string,
-  token: string,
-  counter: number,
-  options: VerifyHOTPOptions = {},
-): { newCounter: number } | null {
-  const { window = 10 } = options;
-
-  for (let i = 0; i <= window; i++) {
-    const currentCounter = counter + i;
-    const generatedToken = genHOTP(key, currentCounter, options);
-    if (generatedToken === token) {
-      return { newCounter: currentCounter + 1 };
-    }
-  }
-
-  return null;
-}
-
 export default genTOTP;

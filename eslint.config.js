@@ -1,39 +1,15 @@
-/** @type {import('eslint').Linter.FlatConfig} */
+const parser = require('@typescript-eslint/parser');
+const plugin = require('@typescript-eslint/eslint-plugin');
+
 module.exports = [
-    {
-      languageOptions: {
-        globals: {
-          browser: true,
-          es2021: true,
-          commonjs: true,
-          mocha: true,
-        },
-        parser: '@typescript-eslint/parser', // Use TypeScript parser
-        parserOptions: {
-          ecmaVersion: 12,
-          sourceType: 'module', // Allows ES Modules
-          project: ['./tsconfig.json', './tsconfig.test.json'], // TypeScript project configuration
-        },
-      },
-      extends: [
-        'airbnb-base',
-        'plugin:@typescript-eslint/recommended', // TypeScript support
-        'plugin:prettier/recommended', // Ensure compatibility with Prettier
-      ],
-      plugins: [
-        '@typescript-eslint', // TypeScript linting plugin
-      ],
-      rules: {
-        'no-bitwise': 'off', // Disable no-bitwise rule
-        '@typescript-eslint/no-unused-vars': 'error', // Error on unused vars
-        'import/extensions': 'off', // Allow omitting file extensions
-        'import/no-unresolved': 'off', // Don't check unresolved imports
-        'no-console': 'warn', // Warn on console statements
-        'no-shadow': 'off', // Disable shadowed variable checks
-        '@typescript-eslint/no-shadow': ['error'], // Use TS rule for shadowing
-        'prettier/prettier': 'error', // Prettier rules as ESLint errors
-        'no-restricted-syntax': 'off',
-      },
+  { ignores: ['node_modules/**', 'dist/**', 'docs/**', 'coverage/**'] },
+  {
+    files: ['src/**/*.ts', 'tests/**/*.ts'],
+    languageOptions: { parser, parserOptions: { ecmaVersion: 2020, sourceType: 'module' } },
+    plugins: { '@typescript-eslint': plugin },
+    rules: {
+      ...plugin.configs.recommended.rules,
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
-  ];
-  
+  },
+];
