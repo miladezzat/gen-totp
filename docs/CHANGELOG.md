@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## Unreleased
+## 4.0.0
+
+### Breaking changes
+
+- Require Node.js 22 or later and enforce the documented OTP input validation.
+- Correct fixed-width codes and malformed Base32 behavior; review noncanonical stored secrets before upgrading.
 
 ### Added
 
@@ -10,6 +15,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Fixed
 
+- Release usable CommonJS, native ESM, and declaration artifacts, verified through installed npm consumers.
 - Decode and validate OTP secrets once per verification window.
 - Check exact npm version existence before deciding whether to publish.
 - Build runtime files automatically when installing or packing a source checkout.

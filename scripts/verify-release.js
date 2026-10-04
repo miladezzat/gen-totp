@@ -1,4 +1,5 @@
 const pkg = require('../package.json');
+const { verifyPublishedPackage } = require('./verify-published-package');
 
 /** Wait for npm processing/replication after an accepted publish; never republish. */
 async function verifyRelease({ name, version }, {
@@ -7,6 +8,7 @@ async function verifyRelease({ name, version }, {
   now = Date.now,
   timeoutMs = 600000,
   log = console.log,
+  verifyPackage = verifyPublishedPackage,
 } = {}) {
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 900000) throw new Error('Invalid release verification timeout');
   const deadline = now() + timeoutMs;
@@ -27,7 +29,8 @@ async function verifyRelease({ name, version }, {
           || !/^sha512-[A-Za-z0-9+/]+={0,2}$/.test(released.dist.integrity)) {
         throw new Error('Registry returned invalid release metadata');
       }
-      log(`Verified ${name}@${version}: ${released.dist.integrity}`);
+      await verifyPackage(released);
+      log(`Verified ${name}@${version}: ${released.dist.integrity}; installed CommonJS and ESM consumers pass`);
       return released;
     }
     if (response && ![404, 408, 429, 500, 502, 503, 504].includes(response.status)) {

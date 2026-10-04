@@ -1,6 +1,6 @@
 # Migration
 
-These changes are recorded under **Unreleased** in the [changelog](/changelog). The package version remains 3.0.1 until a release is requested.
+Version **4.0.0** contains the compatibility changes listed below and in the [changelog](/changelog). The major version reflects the Node.js 22 requirement and stricter validation. Upgrade only after reviewing your runtime and stored secrets.
 
 ## Package imports
 

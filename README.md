@@ -88,7 +88,7 @@ npm run smoke:docs
 
 Documentation source is in `documentation/`; generated GitHub Pages output is committed under `docs/`. Run `npm run docs:serve` to edit, and `npm run docs:preview` to preview production output.
 
-CI checks Node 22 and 24. Release setup and GitHub Pages configuration are documented in [releasing](https://otp.js.org/releasing.html). See [migration](https://otp.js.org/migration.html) for the unreleased compatibility changes.
+CI checks Node 22 and 24. Release setup and GitHub Pages configuration are documented in [releasing](https://otp.js.org/releasing.html). See [migration](https://otp.js.org/migration.html) for the 4.0.0 compatibility changes.
 
 ## License
 
