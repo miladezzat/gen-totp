@@ -18,6 +18,8 @@ npm run smoke:docs
 
 CI runs on Node.js 22 and 24. Behavior fixes need regression tests. Package changes must pass the packed installation check for CommonJS, native ESM, and TypeScript consumers.
 
+After building, run `node scripts/benchmark-verification.js` to compare decoding once per verification window with decoding for every candidate. It checks equivalent results and reports timings for ordinary and long Base32 keys; timings are informational and are not CI assertions.
+
 ## Work on documentation
 
 Edit Markdown in `documentation/`. Start VitePress with:

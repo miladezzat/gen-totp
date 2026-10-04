@@ -6,6 +6,8 @@ Pass a string containing exactly the configured number of ASCII decimal digits. 
 
 Verification compares token bytes with Node's `timingSafeEqual`. It checks the full configured window even when a match is found. This is not a guarantee that the entire request handler has constant timing.
 
+The secret is validated and decoded once per verification call, then reused for each candidate counter.
+
 ## Keep windows small
 
 | API | Default | Counters checked |
