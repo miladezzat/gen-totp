@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## Unreleased
 
+### Added
+
+- Return matched TOTP counters and signed drift with `verifyTOTPWithResult`, preserving boolean verification.
+
 ### Fixed
 
 - Decode and validate OTP secrets once per verification window.

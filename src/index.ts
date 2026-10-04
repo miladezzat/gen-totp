@@ -17,6 +17,7 @@ export interface GenHOTPOptions {
 }
 export interface GenTOTPOptions extends GenHOTPOptions { period?: number; }
 export interface VerifyTOTPOptions extends GenTOTPOptions { window?: number; }
+export interface TOTPMatch { counter: number; delta: number; }
 export interface VerifyHOTPOptions extends GenHOTPOptions { window?: number; }
 export interface OtpAuthUriOptions {
   accountName: string;
@@ -155,20 +156,28 @@ function tokensEqual(expected: string, token: string): boolean {
 export function verifyTOTP(
   key: string, token: string, options: VerifyTOTPOptions = {}, timestamp = Date.now(),
 ): boolean {
+  return verifyTOTPWithResult(key, token, options, timestamp) !== null;
+}
+/** Return the closest matching counter and drift; ties prefer the past. */
+export function verifyTOTPWithResult(
+  key: string, token: string, options: VerifyTOTPOptions = {}, timestamp = Date.now(),
+): TOTPMatch | null {
   const { window = 1, period = 30, digits = 6, algorithm = "SHA-1", encoding = "utf8" } = options;
   validateWindow(window);
   validateOtpOptions(options);
   const counter = timeCounter(timestamp, period);
   validateCounter(counter + window);
   const hex = keyToHex(key, encoding);
-  if (!validToken(token, digits)) return false;
-  let matched = false;
+  if (!validToken(token, digits)) return null;
+  let result: TOTPMatch | null = null;
   for (let offset = -window; offset <= window; offset += 1) {
     if (counter + offset < 0) continue;
     const equal = tokensEqual(hotpFromHex(hex, counter + offset, algorithm, digits), token);
-    matched = equal || matched;
+    if (equal && (result === null || Math.abs(offset) < Math.abs(result.delta))) {
+      result = { counter: counter + offset, delta: offset === 0 ? 0 : offset };
+    }
   }
-  return matched;
+  return result;
 }
 /** Return the next counter to persist atomically, or null when verification fails. */
 export function verifyHOTP(

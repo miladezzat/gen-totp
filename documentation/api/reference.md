@@ -38,6 +38,19 @@ verifyTOTP(key: string, token: string, options?: VerifyTOTPOptions, timestamp?: 
 
 `VerifyTOTPOptions` extends generation options with `window?: number` (default 1). Checks counters from `-window` through `+window`, skipping negative counters. Returns `false` for malformed or unmatched tokens; throws for invalid configuration or keys.
 
+## verifyTOTPWithResult
+
+```ts
+interface TOTPMatch { counter: number; delta: number; }
+verifyTOTPWithResult(
+  key: string, token: string, options?: VerifyTOTPOptions, timestamp?: number,
+): TOTPMatch | null
+```
+
+Checks the same full window as `verifyTOTP`, returning the matched counter and its signed offset from the server's current counter. Negative `delta` means a past counter; positive means a future counter. Returns `null` for malformed or unmatched tokens and throws for invalid configuration or keys. If a code matches several counters, selects the smallest absolute drift, preferring the past on a tie. `verifyTOTP` remains a boolean wrapper around this result.
+
+The result supports application-managed replay tracking; verification itself remains stateless. See [verification](/verification) for persistence requirements.
+
 ## genHOTP
 
 ```ts
@@ -59,7 +72,7 @@ verifyHOTP(
 
 `VerifyHOTPOptions` adds `window?: number` (default 10). Checks the current counter and the next `window` counters. Returns the earliest matching counter plus one, or `null`. The lookahead and next counter must fit in the safe integer range.
 
-Both verification APIs require an integer window from 0 to 1000, and a token with exactly `digits` ASCII decimal characters. See [verification](/verification) for replay prevention.
+All verification APIs require an integer window from 0 to 1000, and a token with exactly `digits` ASCII decimal characters. See [verification](/verification) for replay prevention.
 
 ## generateSecretKey
 
@@ -92,4 +105,4 @@ The decoder accepts lowercase or uppercase, padded or unpadded canonical Base32.
 
 ## Exported types
 
-`FixedLengthVariantType`, `KeyEncoding`, `GenTOTPOptions`, `GenHOTPOptions`, `VerifyTOTPOptions`, `VerifyHOTPOptions`, and `OtpAuthUriOptions` are available as TypeScript type imports.
+`FixedLengthVariantType`, `KeyEncoding`, `GenTOTPOptions`, `GenHOTPOptions`, `VerifyTOTPOptions`, `TOTPMatch`, `VerifyHOTPOptions`, and `OtpAuthUriOptions` are available as TypeScript type imports.
