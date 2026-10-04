@@ -7,7 +7,9 @@ const root = path.resolve(__dirname, '..');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'gen-totp-consumer-'));
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 try {
-  const packed = JSON.parse(execFileSync(npm, ['pack', '--json', '--ignore-scripts', '--pack-destination', temporary], { cwd: root, encoding: 'utf8', env: { ...process.env, HUSKY: '0' } }))[0];
+  // npm 10 runs prepare during pack even with --ignore-scripts. Keep its
+  // lifecycle output out of the JSON response and disable hook installation.
+  const packed = JSON.parse(execFileSync(npm, ['pack', '--json', '--ignore-scripts', '--foreground-scripts=false', '--pack-destination', temporary], { cwd: root, encoding: 'utf8', env: { ...process.env, HUSKY: '0' } }))[0];
   for (const file of ['dist/index.js', 'dist/index.mjs', 'dist/index.d.ts', 'dist/index.d.mts', 'LICENSE.md']) {
     assert.ok(packed.files.some((entry) => entry.path === file), 'Missing package file ' + file);
   }
