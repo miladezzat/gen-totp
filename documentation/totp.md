@@ -29,6 +29,19 @@ console.log(valid); // true
 
 By default, `window: 1` checks the previous, current, and next counter. `window: 0` checks only the current counter. Counters before the Unix epoch are skipped.
 
+Use `verifyTOTPWithResult` when you need the accepted counter for replay tracking or the signed drift for your clock policy:
+
+```ts
+import { verifyTOTPWithResult } from 'gen-totp';
+
+const match = verifyTOTPWithResult(
+  '12345678901234567890', '94287082', { digits: 8, window: 0 }, 59_000,
+);
+console.log(match); // { counter: 1, delta: 0 }
+```
+
+Verification remains stateless. Persist acceptance atomically as described in [replay prevention](/verification#prevent-reuse).
+
 ## Configure the period
 
 ```ts

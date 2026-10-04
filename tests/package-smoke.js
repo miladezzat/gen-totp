@@ -10,6 +10,7 @@ function verify(api) {
   assert.equal(api.genHOTP('12345678901234567890', 0), '755224');
   assert.deepEqual(api.verifyHOTP('12345678901234567890', '755224', 0, { window: 0 }), { newCounter: 1 });
   assert.equal(api.verifyTOTP('12345678901234567890', '94287082', { digits: 8, window: 0 }, 59000), true);
+  assert.deepEqual(api.verifyTOTPWithResult('12345678901234567890', '94287082', { digits: 8, window: 0 }, 59000), { counter: 1, delta: 0 });
   assert.equal(api.base32ToHex('MZXQ===='), '666f');
   const secret = api.generateSecretKey(2);
   assert.equal(api.base32ToHex(secret).length, 4);

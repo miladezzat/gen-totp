@@ -42,6 +42,8 @@ const result = verifyHOTP(secret, token, 0, { window: 0 }); // { newCounter: 1 }
 
 Persist `newCounter` atomically after successful verification. TOTP verification is stateless: the application must track accepted codes to prevent reuse.
 
+`verifyTOTPWithResult(key, token, options?, timestamp?)` returns `{ counter, delta }` or `null` for application-managed replay tracking and clock drift. Persist the accepted counter atomically with the successful operation; see [verification](https://otp.js.org/verification.html).
+
 ## Authenticator enrollment
 
 ```ts
