@@ -30,7 +30,7 @@ The workflow uses Node.js 24, npm 11.13.0, and `id-token: write`. It publishes w
 3. Run the full validation commands, rebuild the docs, and commit all changed files, including `package-lock.json`.
 4. Merge the reviewed release into master.
 
-`publish.yml` compares the stable local version with npm latest. Equal versions skip publication; lower versions fail; higher versions run lint, tests, package installation checks, and docs checks before publishing.
+`publish.yml` first checks whether the exact stable local version already exists on npm. Existing versions skip publication, even if the `latest` tag has moved. Only an exact-version 404 permits comparison with npm latest: unpublished lower versions fail, and higher versions run lint, tests, package installation checks, and docs checks before publishing. Network errors, unexpected responses, and inconsistent metadata fail the gate without publishing.
 
 After a successful publish, the workflow polls the exact npm version and checks its integrity metadata. A registry timeout fails verification without publishing again. Inspect npm before retrying a release.
 
